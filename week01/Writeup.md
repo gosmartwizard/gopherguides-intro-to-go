@@ -47,10 +47,12 @@ GO :
 
     func Println(a ...interface{}) (n int, err error)
 ```
+```sh
 JAVA:
 
            public void print(char c)
            public void println(int x)
+```
 
  
 
