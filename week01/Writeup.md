@@ -50,8 +50,9 @@ GO :
 ```sh
 JAVA:
 
-           public void print(char c)
-           public void println(int x)
+    public void print(char c)
+    
+    public void println(int x)
 ```
 
  
