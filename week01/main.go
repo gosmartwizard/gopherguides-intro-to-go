@@ -7,7 +7,7 @@ import (
 func main() {
 	fmt.Println("Hello, World!")
 
-	varString := "GO"
+	s := "GO"
 	varInteger := 42
 	varBoolean := true
 
