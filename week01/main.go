@@ -9,7 +9,7 @@ func main() {
 
 	s := "GO"
 	i := 42
-	varBoolean := true
+	b := true
 
 	fmt.Print("\n")
 
