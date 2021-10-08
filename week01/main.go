@@ -13,17 +13,17 @@ func main() {
 
 	fmt.Print("\n")
 
-	fmt.Printf("Printing, %T (%q)! \n", varString, varString)
-	fmt.Printf("Printing, %T (%d)! \n", varInteger, varInteger)
-	fmt.Printf("Printing, %T (%t)! \n\n", varBoolean, varBoolean)
+	fmt.Printf("Printing, %T (%q)! \n", s, s)
+	fmt.Printf("Printing, %T (%d)! \n", i, i)
+	fmt.Printf("Printing, %T (%t)! \n\n", b, b)
 
-	fmt.Printf("Printing, %T (%v)! \n", varString, varString)
-	fmt.Printf("Printing, %T (%v)! \n", varInteger, varInteger)
-	fmt.Printf("Printing, %T (%v)! \n\n", varBoolean, varBoolean)
+	fmt.Printf("Printing, %T (%v)! \n", s, s)
+	fmt.Printf("Printing, %T (%v)! \n", i, i)
+	fmt.Printf("Printing, %T (%v)! \n\n", b, b)
 
-	fmt.Printf("Printing, %T (%#v)! \n", varString, varString)
-	fmt.Printf("Printing, %T (%#v)! \n", varInteger, varInteger)
-	fmt.Printf("Printing, %T (%#v)! \n\n", varBoolean, varBoolean)
+	fmt.Printf("Printing, %T (%#v)! \n", s, s)
+	fmt.Printf("Printing, %T (%#v)! \n", i, i)
+	fmt.Printf("Printing, %T (%#v)! \n\n", b, b)
 
-	fmt.Printf("Printing, %T (%s)! \n", varString, varString)
+	fmt.Printf("Printing, %T (%s)! \n", s, s)
 }
