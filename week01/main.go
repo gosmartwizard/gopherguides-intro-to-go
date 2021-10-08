@@ -8,7 +8,7 @@ func main() {
 	fmt.Println("Hello, World!")
 
 	s := "GO"
-	varInteger := 42
+	i := 42
 	varBoolean := true
 
 	fmt.Print("\n")
