@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestArray1(t *testing.T) {
+func Test_Array_1(t *testing.T) {
 
 	exp := [4]string{"John", "Paul", "George", "Ringo"}
 	act := [4]string{}
@@ -15,13 +15,13 @@ func TestArray1(t *testing.T) {
 	}
 
 	for i, v := range act {
-		if act[i] != exp[i] {
+		if v != exp[i] {
 			t.Errorf("act[%d] : %s is not equal to exp[%d] : %s ", i, v, i, exp[i])
 		}
 	}
 }
 
-func TestArray2(t *testing.T) {
+func Test_Array_2(t *testing.T) {
 
 	exp := [4]string{"John", "Paul", "George", "Ringo"}
 	act := [4]string{}
@@ -35,7 +35,7 @@ func TestArray2(t *testing.T) {
 	}
 }
 
-func TestArray3(t *testing.T) {
+func Test_Array_3(t *testing.T) {
 
 	exp := [4]string{"John", "Paul", "George", "Ringo"}
 	act := [4]string{}
@@ -44,28 +44,30 @@ func TestArray3(t *testing.T) {
 		act[i] = v
 	}
 
-	if len(act) != len(exp) {
-		t.Errorf("len of act : %d is not equal to len of exp : %d ", len(act), len(exp))
+	la := len(act)
+	le := len(exp)
+	if la != le {
+		t.Errorf("len of act : %d is not equal to len of exp : %d ", la, le)
 	}
 }
 
-func TestSlice1(t *testing.T) {
+func Test_Slice_1(t *testing.T) {
 
 	exp := []string{"John", "Paul", "George", "Ringo"}
-	var act []string
+	act := make([]string, 0, len(exp))
 
 	for _, v := range exp {
 		act = append(act, v)
 	}
 
 	for i, v := range act {
-		if act[i] != exp[i] {
+		if v != exp[i] {
 			t.Errorf("act[%d] : %s is not equal to exp[%d] : %s ", i, v, i, exp[i])
 		}
 	}
 }
 
-func TestSlice2(t *testing.T) {
+func Test_Slice_2(t *testing.T) {
 
 	exp := []string{"John", "Paul", "George", "Ringo"}
 	var act []string
@@ -79,7 +81,7 @@ func TestSlice2(t *testing.T) {
 	}
 }
 
-func TestSlice3(t *testing.T) {
+func Test_Slice_3(t *testing.T) {
 
 	exp := []string{"John", "Paul", "George", "Ringo"}
 	var act []string
@@ -88,12 +90,36 @@ func TestSlice3(t *testing.T) {
 		act = append(act, v)
 	}
 
-	if len(act) != len(exp) {
-		t.Errorf("len of act : %d is not equal to len of exp : %d ", len(act), len(exp))
+	la := len(act)
+	le := len(exp)
+	if la != le {
+		t.Errorf("len of act : %d is not equal to len of exp : %d ", la, le)
 	}
 }
 
-func TestMap1(t *testing.T) {
+func Test_Slice_4(t *testing.T) {
+
+	exp := []string{"John", "Paul", "George", "Ringo"}
+	var act []string
+
+	for _, v := range exp {
+		act = append(act, v)
+	}
+
+	la := len(act)
+	le := len(exp)
+	if la != le {
+		t.Errorf("len of act : %d is not equal to len of exp : %d ", la, le)
+	} else {
+		for i, v := range act {
+			if act[i] != exp[i] {
+				t.Errorf("act[%d] : %s is not equal to exp[%d] : %s ", i, v, i, exp[i])
+			}
+		}
+	}
+}
+
+func Test_Map_1(t *testing.T) {
 
 	exp := map[string]string{
 		"John":   "john@gmail.com",
@@ -102,7 +128,7 @@ func TestMap1(t *testing.T) {
 		"Ringo":  "ringo@gmail.com",
 	}
 
-	act := map[string]string{}
+	act := make(map[string]string, len(exp))
 
 	for k, v := range exp {
 		act[k] = v
@@ -118,7 +144,7 @@ func TestMap1(t *testing.T) {
 	}
 }
 
-func TestMap2(t *testing.T) {
+func Test_Map_2(t *testing.T) {
 
 	exp := map[string]string{
 		"John":   "john@gmail.com",
@@ -128,7 +154,6 @@ func TestMap2(t *testing.T) {
 	}
 
 	act := map[string]string{}
-
 
 	for k, v := range exp {
 		act[k] = v
@@ -139,7 +164,7 @@ func TestMap2(t *testing.T) {
 	}
 }
 
-func TestMap3(t *testing.T) {
+func Test_Map_3(t *testing.T) {
 
 	exp := map[string]string{
 		"John":   "john@gmail.com",
@@ -154,7 +179,41 @@ func TestMap3(t *testing.T) {
 		act[k] = v
 	}
 
-	if len(act) != len(exp) {
-		t.Errorf("len of act : %d is not equal to len of exp : %d ", len(act), len(exp))
+	la := len(act)
+	le := len(exp)
+	if la != le {
+		t.Errorf("len of act : %d is not equal to len of exp : %d ", la, le)
 	}
 }
+
+func Test_Map_4(t *testing.T) {
+
+	exp := map[string]string{
+		"John":   "john@gmail.com",
+		"Paul":   "paul@gmail.com",
+		"George": "george@gmail.com",
+		"Ringo":  "ringo@gmail.com",
+	}
+
+	act := map[string]string{}
+
+	for k, v := range exp {
+		act[k] = v
+	}
+
+	la := len(act)
+	le := len(exp)
+	if la != le {
+		t.Errorf("len of act : %d is not equal to len of exp : %d ", la, le)
+	} else {
+		for ka, va := range act {
+			ve, ok := exp[ka]
+			if ok {
+				if va != ve {
+					t.Errorf("act[%q] : %s is not equal to exp[%q] : %s ", ka, va, ka, ve)
+				}
+			}
+		}
+	}
+}
+
