@@ -8,7 +8,7 @@ import (
 
 const (
 	min  = 1
-	max  = 100
+	max  = 10
 	play = 1
 )
 
@@ -28,7 +28,9 @@ func (m *Movie) Rate(rating float32) error {
 	if m.plays == 0 {
 		return fmt.Errorf("can't review a movie without watching it first")
 	}
+
 	m.ratings += rating
+
 	return nil
 }
 
@@ -54,7 +56,6 @@ func (m Movie) String() string {
 }
 
 func (t *Theatre) Play(viewers int, movies ...*Movie) error {
-
 	if 0 == len(movies) {
 		return fmt.Errorf("no movies to play")
 	}
@@ -67,7 +68,6 @@ func (t *Theatre) Play(viewers int, movies ...*Movie) error {
 }
 
 func (t Theatre) Critique(movies []*Movie, cf CritiqueFn) error {
-
 	if 0 == len(movies) {
 		return fmt.Errorf("no movies to Critique")
 	}
@@ -77,7 +77,7 @@ func (t Theatre) Critique(movies []*Movie, cf CritiqueFn) error {
 	}
 
 	for _, m := range movies {
-		m.Play(1)
+		m.Play(play)
 
 		r, err := cf(m)
 		if err != nil {
@@ -96,6 +96,7 @@ func (t Theatre) Critique(movies []*Movie, cf CritiqueFn) error {
 func generateRandomNumber() int {
 	rand.Seed(time.Now().UnixNano())
 	random := rand.Intn(max-min) + min
+
 	return random
 }
 
@@ -105,6 +106,8 @@ var critiqueFn = func(movie *Movie) (float32, error) {
 	if movie == nil {
 		return 0.0, fmt.Errorf("no movie for rating")
 	}
+
 	rating := generateRandomNumber()
+
 	return float32(rating), nil
 }
