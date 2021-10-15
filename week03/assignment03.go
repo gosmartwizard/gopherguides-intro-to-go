@@ -9,6 +9,7 @@ import (
 const (
 	min int = 1
 	max int = 100
+	play int = 1
 )
 
 type Movie struct {
@@ -33,7 +34,7 @@ func (m *Movie) Rate(rating float32) error {
 
 func (m *Movie) Play(viewers int) {
 	m.viewers += viewers
-	m.plays += viewers // m.plays += 1
+	m.plays += play
 }
 
 func (m Movie) Viewers() int {

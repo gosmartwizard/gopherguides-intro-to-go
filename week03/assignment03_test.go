@@ -56,10 +56,11 @@ func Test_Movie_Play_2(t *testing.T) {
 		Length: 185,
 	}
 	viewers := 100
+	plays := 1
 	m1.Play(viewers)
 
-	if viewers != m1.Plays() {
-		t.Fatalf("Actual viewers : %d and Expected viewers %d", viewers, m1.Plays())
+	if plays != m1.Plays() {
+		t.Fatalf("Actual plays : %d and Expected plays %d", plays, m1.Plays())
 	}
 }
 
@@ -82,10 +83,11 @@ func Test_Plays_1(t *testing.T) {
 		Length: 185,
 	}
 	viewers := 250
+	plays := 1
 	m1.Play(viewers)
 
-	if viewers != m1.Plays() {
-		t.Fatalf("Actual viewers : %d and Expected viewers %d", viewers, m1.Plays())
+	if plays != m1.Plays() {
+		t.Fatalf("Actual plays : %d and Expected plays %d", plays, m1.Plays())
 	}
 }
 
