@@ -5,6 +5,8 @@ import (
 )
 
 func Test_Rate_1(t *testing.T) {
+	t.Parallel()
+
 	m1 := Movie{
 		Name:   "Avengers",
 		Length: 185,
@@ -18,6 +20,8 @@ func Test_Rate_1(t *testing.T) {
 }
 
 func Test_Rate_2(t *testing.T) {
+	t.Parallel()
+
 	m1 := Movie{
 		Name:   "Avengers",
 		Length: 185,
@@ -38,6 +42,8 @@ func Test_Rate_2(t *testing.T) {
 }
 
 func Test_Movie_Play_1(t *testing.T) {
+	t.Parallel()
+
 	m1 := Movie{
 		Name:   "Avengers",
 		Length: 185,
@@ -51,6 +57,8 @@ func Test_Movie_Play_1(t *testing.T) {
 }
 
 func Test_Movie_Play_2(t *testing.T) {
+	t.Parallel()
+
 	m1 := Movie{
 		Name:   "Avengers",
 		Length: 185,
@@ -65,6 +73,8 @@ func Test_Movie_Play_2(t *testing.T) {
 }
 
 func Test_Viewers_1(t *testing.T) {
+	t.Parallel()
+
 	m1 := Movie{
 		Name:   "Avengers",
 		Length: 185,
@@ -78,6 +88,8 @@ func Test_Viewers_1(t *testing.T) {
 }
 
 func Test_Plays_1(t *testing.T) {
+	t.Parallel()
+
 	m1 := Movie{
 		Name:   "Avengers",
 		Length: 185,
@@ -92,6 +104,8 @@ func Test_Plays_1(t *testing.T) {
 }
 
 func Test_Rating_1(t *testing.T) {
+	t.Parallel()
+
 	m1 := Movie{
 		Name:   "Avengers",
 		Length: 185,
@@ -113,6 +127,8 @@ func Test_Rating_1(t *testing.T) {
 }
 
 func Test_Rating_2(t *testing.T) {
+	t.Parallel()
+
 	m1 := Movie{
 		Name:   "Avengers",
 		Length: 185,
@@ -138,6 +154,8 @@ func Test_Rating_2(t *testing.T) {
 }
 
 func Test_String_1(t *testing.T) {
+	t.Parallel()
+
 	m1 := Movie{
 		Name:   "Avengers",
 		Length: 185,
@@ -158,6 +176,7 @@ func Test_String_1(t *testing.T) {
 }
 
 func Test_Theatre_Play_1(t *testing.T) {
+	t.Parallel()
 
 	t1 := Theatre{
 		name: "Galaxy",
@@ -171,6 +190,7 @@ func Test_Theatre_Play_1(t *testing.T) {
 }
 
 func Test_Theatre_Play_2(t *testing.T) {
+	t.Parallel()
 
 	t1 := Theatre{
 		name: "Galaxy",
@@ -192,6 +212,8 @@ func Test_Theatre_Play_2(t *testing.T) {
 }
 
 func Test_generateRandomNumber(t *testing.T) {
+	t.Parallel()
+
 	n := generateRandomNumber()
 	if n < min || n > max {
 		t.Errorf("n : %d is not in expected range{1,100}", n)
