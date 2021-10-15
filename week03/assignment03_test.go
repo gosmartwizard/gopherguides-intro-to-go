@@ -165,71 +165,8 @@ func Test_Theatre_Play_2(t *testing.T) {
 	}
 }
 
-func Test_Critique_1(t *testing.T) {
 
-	t1 := Theatre{
-		name: "Galaxy",
-	}
 
-	var movies []*Movie
-	err := t1.Critique(movies, critiqueFn)
-	e := "no movies to Critique"
-	if err.Error() != e {
-		t.Fatalf(err.Error())
-	}
-}
-
-/*func Test_Critique_2(t *testing.T) {
-
-	t1 := Theatre{
-		name : "Galaxy",
-	}
-
-	m1 := Movie{
-		Name:   "Avengers",
-		Length: 185,
-	}
-	m2 := Movie{
-		Name:   "Batman",
-		Length: 165,
-	}
-
-	var movies []*Movie
-	movies = append(movies, &m1, &m2)
-
-	critiqueFn = nil
-	err := t1.Critique(movies, critiqueFn)
-	e := "CritiqueFn is nil"
-	if err.Error() != e {
-		t.Fatalf(err.Error())
-	}
-}*/
-
-func Test_Critique_3(t *testing.T) {
-
-	t1 := Theatre{
-		name: "Galaxy",
-	}
-
-	m1 := Movie{
-		Name:   "Avengers",
-		Length: 185,
-	}
-
-	m2 := Movie{
-		Name:   "Batman",
-		Length: 165,
-	}
-
-	var movies []*Movie
-	movies = append(movies, &m1, &m2)
-
-	err := t1.Critique(movies, critiqueFn)
-
-	if err != nil {
-		t.Fatalf(err.Error())
-	}
-}
 
 func Test_generateRandomNumber(t *testing.T) {
 	n := generateRandomNumber()
@@ -259,3 +196,70 @@ func Test_critiqueFn_2(t *testing.T) {
 		t.Errorf(err.Error())
 	}
 }
+
+func Test_Critique_1(t *testing.T) {
+
+	t1 := Theatre{
+		name: "Galaxy",
+	}
+
+	var movies []*Movie
+	err := t1.Critique(movies, critiqueFn)
+	e := "no movies to Critique"
+	if err.Error() != e {
+		t.Fatalf(err.Error())
+	}
+}
+
+func Test_Critique_2(t *testing.T) {
+
+	t1 := Theatre{
+		name: "Galaxy",
+	}
+
+	m1 := Movie{
+		Name:   "Avengers",
+		Length: 185,
+	}
+
+	m2 := Movie{
+		Name:   "Batman",
+		Length: 165,
+	}
+
+	var movies []*Movie
+	movies = append(movies, &m1, &m2)
+
+	err := t1.Critique(movies, critiqueFn)
+
+	if err != nil {
+		t.Fatalf(err.Error())
+	}
+}
+
+func Test_Critique_3(t *testing.T) {
+
+	t1 := Theatre{
+		name : "Galaxy",
+	}
+
+	m1 := Movie{
+		Name:   "Avengers",
+		Length: 185,
+	}
+	m2 := Movie{
+		Name:   "Batman",
+		Length: 165,
+	}
+
+	var movies []*Movie
+	movies = append(movies, &m1, &m2)
+
+	critiqueFn = nil
+	err := t1.Critique(movies, critiqueFn)
+	e := "CritiqueFn is nil"
+	if err.Error() != e {
+		t.Fatalf(err.Error())
+	}
+}
+

@@ -7,9 +7,9 @@ import (
 )
 
 const (
-	min int = 1
-	max int = 100
-	play int = 1
+	min  = 1
+	max  = 100
+	play = 1
 )
 
 type Movie struct {
@@ -50,8 +50,7 @@ func (m Movie) Rating() float64 {
 }
 
 func (m Movie) String() string {
-	s := fmt.Sprintf("%s (%dm) %.1f", m.Name, m.Length, m.ratings) + "%"
-	return s
+	return fmt.Sprintf("%s (%dm) %.1f", m.Name, m.Length, m.ratings) + "%"
 }
 
 func (t *Theatre) Play(viewers int, movies ...*Movie) error {
