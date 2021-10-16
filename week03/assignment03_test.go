@@ -135,18 +135,45 @@ func Test_Rating_2(t *testing.T) {
 	}
 
 	m1.Play(100)
-	err := m1.Rate(8.5)
+	err := m1.Rate(8.3)
 	if err != nil {
 		t.Fatalf(err.Error())
 	}
 
 	m1.Play(200)
-	err = m1.Rate(9.5)
+	err = m1.Rate(9.7)
 	if err != nil {
 		t.Fatalf(err.Error())
 	}
 
 	act := 9.0
+	exp := m1.Rating()
+	if act != exp {
+		t.Fatalf("Actual rating : %.1f and Expected rating %.1f", act, exp)
+	}
+}
+
+func Test_Rating_3(t *testing.T) {
+	t.Parallel()
+
+	m1 := Movie{
+		Name:   "Avengers",
+		Length: 185,
+	}
+
+	m1.Play(100)
+	err := m1.Rate(8.3)
+	if err != nil {
+		t.Fatalf(err.Error())
+	}
+
+	m1.Play(200)
+	err = m1.Rate(9.6)
+	if err != nil {
+		t.Fatalf(err.Error())
+	}
+
+	act := 8.95
 	exp := m1.Rating()
 	if act != exp {
 		t.Fatalf("Actual rating : %.1f and Expected rating %.1f", act, exp)
@@ -163,12 +190,12 @@ func Test_String_1(t *testing.T) {
 
 	m1.Play(100)
 
-	err := m1.Rate(8.2)
+	err := m1.Rate(8.250)
 	if err != nil {
 		t.Fatalf(err.Error())
 	}
 
-	act := "Avengers (185m) 8.2%"
+	act := "Avengers (185m) 82.5%"
 	exp := m1.String()
 	if act != exp {
 		t.Fatalf("Actual rating : %s and Expected rating %s", act, exp)

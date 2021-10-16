@@ -2,6 +2,7 @@ package week03
 
 import (
 	"fmt"
+	"math"
 	"math/rand"
 	"time"
 )
@@ -48,11 +49,19 @@ func (m Movie) Plays() int {
 }
 
 func (m Movie) Rating() float64 {
-	return float64(m.ratings / float32(m.Plays()))
+	if 0 == m.Plays() {
+		return 0.00
+	}
+
+	r := float64(m.ratings / float32(m.Plays()))
+	r = math.Round(r*100) / 100
+
+	return r
 }
 
 func (m Movie) String() string {
-	return fmt.Sprintf("%s (%dm) %.1f", m.Name, m.Length, m.ratings) + "%"
+	r := m.Rating() * 10
+	return fmt.Sprintf("%s (%dm) %.1f", m.Name, m.Length, r) + "%"
 }
 
 func (t *Theatre) Play(viewers int, movies ...*Movie) error {
