@@ -18,7 +18,7 @@ type Movie struct {
 	Name    string
 	viewers int
 	plays   int
-	ratings float32
+	ratings []float32
 }
 
 type Theatre struct {
@@ -30,7 +30,7 @@ func (m *Movie) Rate(rating float32) error {
 		return fmt.Errorf("can't review a movie without watching it first")
 	}
 
-	m.ratings += rating
+	m.ratings = append(m.ratings, rating)
 
 	return nil
 }
@@ -53,7 +53,12 @@ func (m Movie) Rating() float64 {
 		return 0.00
 	}
 
-	r := float64(m.ratings / float32(m.Plays()))
+	var rs float32 = 0.0
+	for _, rating := range m.ratings {
+		rs += rating
+	}
+
+	r := float64(rs / float32(m.Plays()))
 	r = math.Round(r*100) / 100
 
 	return r

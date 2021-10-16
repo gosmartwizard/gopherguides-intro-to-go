@@ -11,11 +11,14 @@ func Test_Rate_1(t *testing.T) {
 		Name:   "Avengers",
 		Length: 185,
 	}
+
 	var rating float32 = 8.2
-	err := m1.Rate(rating)
-	e := "can't review a movie without watching it first"
-	if err.Error() != e {
-		t.Fatalf(err.Error())
+	act := m1.Rate(rating)
+
+	exp := "can't review a movie without watching it first"
+
+	if exp != act.Error() {
+		t.Errorf(act.Error())
 	}
 }
 
@@ -33,11 +36,7 @@ func Test_Rate_2(t *testing.T) {
 	err := m1.Rate(rating)
 
 	if err != nil {
-		t.Fatalf(err.Error())
-	}
-
-	if rating != m1.ratings {
-		t.Fatalf("Actual rating : %f and Expected rating %f", rating, m1.ratings)
+		t.Errorf(err.Error())
 	}
 }
 
@@ -52,7 +51,7 @@ func Test_Movie_Play_1(t *testing.T) {
 	m1.Play(viewers)
 
 	if viewers != m1.Viewers() {
-		t.Fatalf("Actual viewers : %d and Expected viewers %d", viewers, m1.Viewers())
+		t.Errorf("Actual viewers : %d and Expected viewers %d", viewers, m1.Viewers())
 	}
 }
 
@@ -68,7 +67,7 @@ func Test_Movie_Play_2(t *testing.T) {
 	m1.Play(viewers)
 
 	if plays != m1.Plays() {
-		t.Fatalf("Actual plays : %d and Expected plays %d", plays, m1.Plays())
+		t.Errorf("Actual plays : %d and Expected plays %d", plays, m1.Plays())
 	}
 }
 
@@ -83,7 +82,7 @@ func Test_Viewers_1(t *testing.T) {
 	m1.Play(viewers)
 
 	if viewers != m1.Viewers() {
-		t.Fatalf("Actual viewers : %d and Expected viewers %d", viewers, m1.Viewers())
+		t.Errorf("Actual viewers : %d and Expected viewers %d", viewers, m1.Viewers())
 	}
 }
 
@@ -99,11 +98,35 @@ func Test_Plays_1(t *testing.T) {
 	m1.Play(viewers)
 
 	if plays != m1.Plays() {
-		t.Fatalf("Actual plays : %d and Expected plays %d", plays, m1.Plays())
+		t.Errorf("Actual plays : %d and Expected plays %d", plays, m1.Plays())
 	}
 }
 
 func Test_Rating_1(t *testing.T) {
+	t.Parallel()
+
+	m1 := Movie{
+		Name:   "Avengers",
+		Length: 185,
+	}
+
+	e := "can't review a movie without watching it first"
+
+	err := m1.Rate(8.5)
+
+	if e != err.Error() {
+		t.Fatalf(err.Error())
+	}
+
+	exp := 0.0
+	act := m1.Rating()
+
+	if act != exp {
+		t.Errorf("Actual rating : %.1f and Expected rating %.1f", act, exp)
+	}
+}
+
+func Test_Rating_2(t *testing.T) {
 	t.Parallel()
 
 	m1 := Movie{
@@ -118,15 +141,15 @@ func Test_Rating_1(t *testing.T) {
 		t.Fatalf(err.Error())
 	}
 
-	act := 8.5
-	exp := m1.Rating()
+	exp := 8.5
+	act := m1.Rating()
 
 	if act != exp {
-		t.Fatalf("Actual rating : %.1f and Expected rating %.1f", act, exp)
+		t.Errorf("Actual rating : %.1f and Expected rating %.1f", act, exp)
 	}
 }
 
-func Test_Rating_2(t *testing.T) {
+func Test_Rating_3(t *testing.T) {
 	t.Parallel()
 
 	m1 := Movie{
@@ -146,14 +169,15 @@ func Test_Rating_2(t *testing.T) {
 		t.Fatalf(err.Error())
 	}
 
-	act := 9.0
-	exp := m1.Rating()
+	exp := 9.0
+	act := m1.Rating()
+
 	if act != exp {
-		t.Fatalf("Actual rating : %.1f and Expected rating %.1f", act, exp)
+		t.Errorf("Actual rating : %.1f and Expected rating %.1f", act, exp)
 	}
 }
 
-func Test_Rating_3(t *testing.T) {
+func Test_Rating_4(t *testing.T) {
 	t.Parallel()
 
 	m1 := Movie{
@@ -173,10 +197,10 @@ func Test_Rating_3(t *testing.T) {
 		t.Fatalf(err.Error())
 	}
 
-	act := 8.95
-	exp := m1.Rating()
+	exp := 8.95
+	act := m1.Rating()
 	if act != exp {
-		t.Fatalf("Actual rating : %.1f and Expected rating %.1f", act, exp)
+		t.Errorf("Actual rating : %.1f and Expected rating %.1f", act, exp)
 	}
 }
 
@@ -195,10 +219,10 @@ func Test_String_1(t *testing.T) {
 		t.Fatalf(err.Error())
 	}
 
-	act := "Avengers (185m) 82.5%"
-	exp := m1.String()
+	exp := "Avengers (185m) 82.5%"
+	act := m1.String()
 	if act != exp {
-		t.Fatalf("Actual rating : %s and Expected rating %s", act, exp)
+		t.Errorf("Actual rating : %s and Expected rating %s", act, exp)
 	}
 }
 
@@ -212,7 +236,7 @@ func Test_Theatre_Play_1(t *testing.T) {
 	err := t1.Play(100)
 	e := "no movies to play"
 	if err.Error() != e {
-		t.Fatalf(err.Error())
+		t.Errorf(err.Error())
 	}
 }
 
@@ -234,7 +258,7 @@ func Test_Theatre_Play_2(t *testing.T) {
 
 	err := t1.Play(100, &m1, &m2)
 	if err != nil {
-		t.Fatalf(err.Error())
+		t.Errorf(err.Error())
 	}
 }
 
