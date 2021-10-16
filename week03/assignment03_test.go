@@ -216,7 +216,7 @@ func Test_generateRandomNumber(t *testing.T) {
 
 	n := generateRandomNumber()
 	if n < min || n > max {
-		t.Errorf("n : %d is not in expected range{1,100}", n)
+		t.Errorf("n : %d is not in expected range{%d,%d}", n, min, max)
 	}
 }
 
@@ -233,12 +233,12 @@ func Test_critiqueFn_2(t *testing.T) {
 		Name:   "Avengers",
 		Length: 185,
 	}
-	r, err := critiqueFn(&m1)
+	n, err := critiqueFn(&m1)
 	if err != nil {
 		t.Fatalf(err.Error())
 	}
-	if r < min || r > max {
-		t.Errorf(err.Error())
+	if n < min || n > max {
+		t.Errorf("n : %f is not in expected range{%d,%d}", n, min, max)
 	}
 }
 

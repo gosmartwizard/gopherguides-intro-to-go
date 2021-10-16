@@ -25,7 +25,7 @@ type Theatre struct {
 }
 
 func (m *Movie) Rate(rating float32) error {
-	if m.plays == 0 {
+	if 0 == m.plays {
 		return fmt.Errorf("can't review a movie without watching it first")
 	}
 
@@ -80,12 +80,12 @@ func (t Theatre) Critique(movies []*Movie, cf CritiqueFn) error {
 		m.Play(play)
 
 		r, err := cf(m)
-		if err != nil {
+		if nil != err {
 			return fmt.Errorf(" Error : %s", err.Error())
 		}
 
 		err = m.Rate(r)
-		if err != nil {
+		if nil != err {
 			return fmt.Errorf(" Error : %s", err.Error())
 		}
 	}
@@ -103,7 +103,7 @@ func generateRandomNumber() int {
 type CritiqueFn = func(*Movie) (float32, error)
 
 var critiqueFn = func(movie *Movie) (float32, error) {
-	if movie == nil {
+	if nil == movie {
 		return 0.0, fmt.Errorf("no movie for rating")
 	}
 
