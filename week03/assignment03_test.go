@@ -212,7 +212,7 @@ func Test_String_1(t *testing.T) {
 
 	err := m1.Rate(8.250)
 	if err != nil {
-		t.Fatalf(err.Error())
+		t.Fatal(err)
 	}
 
 	exp := "Avengers (185m) 82.5%"
