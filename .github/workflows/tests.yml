@@ -1,6 +1,9 @@
 name: Tests
-
-on: [push]
+on:
+  push:
+    branches: [main week03]
+  pull_request:
+    branches: [main]
 
 jobs:
   build:
