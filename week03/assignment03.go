@@ -26,7 +26,7 @@ type Theatre struct {
 }
 
 func (m *Movie) Rate(rating float32) error {
-	if 0 == m.plays {
+	if m.plays == 0 {
 		return fmt.Errorf("can't review a movie without watching it first")
 	}
 
@@ -49,11 +49,11 @@ func (m Movie) Plays() int {
 }
 
 func (m Movie) Rating() float64 {
-	if 0 == m.Plays() {
+	if m.Plays() == 0 {
 		return 0.00
 	}
 
-	var rs float32 = 0.0
+	var rs float32
 	for _, rating := range m.ratings {
 		rs += rating
 	}
@@ -66,11 +66,11 @@ func (m Movie) Rating() float64 {
 
 func (m Movie) String() string {
 	r := m.Rating() * 10
-	return fmt.Sprintf("%s (%dm) %.1f", m.Name, m.Length, r) + "%"
+	return fmt.Sprintf("%s (%dm) %.1f%%", m.Name, m.Length, r)
 }
 
 func (t *Theatre) Play(viewers int, movies ...*Movie) error {
-	if 0 == len(movies) {
+	if len(movies) == 0 {
 		return fmt.Errorf("no movies to play")
 	}
 
@@ -82,25 +82,25 @@ func (t *Theatre) Play(viewers int, movies ...*Movie) error {
 }
 
 func (t Theatre) Critique(movies []*Movie, cf CritiqueFn) error {
-	if 0 == len(movies) {
-		return fmt.Errorf("no movies to Critique")
+	if len(movies) == 0 {
+		return fmt.Errorf("no movies to critique")
 	}
 
-	if nil == cf {
-		return fmt.Errorf("CritiqueFn is nil")
+	if cf == nil {
+		return fmt.Errorf("critique function is nil")
 	}
 
 	for _, m := range movies {
 		m.Play(play)
 
 		r, err := cf(m)
-		if nil != err {
-			return fmt.Errorf(" Error : %s", err.Error())
+		if err != nil {
+			return err
 		}
 
 		err = m.Rate(r)
-		if nil != err {
-			return fmt.Errorf(" Error : %s", err.Error())
+		if err != nil {
+			return err
 		}
 	}
 
@@ -117,7 +117,7 @@ func generateRandomNumber() int {
 type CritiqueFn = func(*Movie) (float32, error)
 
 var critiqueFn = func(movie *Movie) (float32, error) {
-	if nil == movie {
+	if movie == nil {
 		return 0.0, fmt.Errorf("no movie for rating")
 	}
 

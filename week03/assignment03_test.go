@@ -13,12 +13,10 @@ func Test_Rate_1(t *testing.T) {
 	}
 
 	var rating float32 = 8.2
-	act := m1.Rate(rating)
+	err := m1.Rate(rating)
 
-	exp := "can't review a movie without watching it first"
-
-	if exp != act.Error() {
-		t.Errorf(act.Error())
+	if err == nil {
+		t.Fatal("expected an error and got none")
 	}
 }
 
@@ -36,7 +34,7 @@ func Test_Rate_2(t *testing.T) {
 	err := m1.Rate(rating)
 
 	if err != nil {
-		t.Errorf(err.Error())
+		t.Error(err)
 	}
 }
 
@@ -51,7 +49,7 @@ func Test_Movie_Play_1(t *testing.T) {
 	m1.Play(viewers)
 
 	if viewers != m1.Viewers() {
-		t.Errorf("Actual viewers : %d and Expected viewers %d", viewers, m1.Viewers())
+		t.Errorf("expected %d, got %d", m1.Viewers(), viewers)
 	}
 }
 
@@ -67,7 +65,7 @@ func Test_Movie_Play_2(t *testing.T) {
 	m1.Play(viewers)
 
 	if plays != m1.Plays() {
-		t.Errorf("Actual plays : %d and Expected plays %d", plays, m1.Plays())
+		t.Errorf("expected %d, got %d", m1.Plays(), plays)
 	}
 }
 
@@ -82,7 +80,7 @@ func Test_Viewers_1(t *testing.T) {
 	m1.Play(viewers)
 
 	if viewers != m1.Viewers() {
-		t.Errorf("Actual viewers : %d and Expected viewers %d", viewers, m1.Viewers())
+		t.Errorf("expected %d, got %d", m1.Viewers(), viewers)
 	}
 }
 
@@ -98,7 +96,7 @@ func Test_Plays_1(t *testing.T) {
 	m1.Play(viewers)
 
 	if plays != m1.Plays() {
-		t.Errorf("Actual plays : %d and Expected plays %d", plays, m1.Plays())
+		t.Errorf("expected %d, got %d", m1.Plays(), plays)
 	}
 }
 
@@ -110,19 +108,17 @@ func Test_Rating_1(t *testing.T) {
 		Length: 185,
 	}
 
-	e := "can't review a movie without watching it first"
-
 	err := m1.Rate(8.5)
 
-	if e != err.Error() {
-		t.Fatalf(err.Error())
+	if err == nil {
+		t.Fatal("expected an error and got none")
 	}
 
 	exp := 0.0
 	act := m1.Rating()
 
 	if act != exp {
-		t.Errorf("Actual rating : %.1f and Expected rating %.1f", act, exp)
+		t.Errorf("expected, %.1f, got %.1f", exp, act)
 	}
 }
 
@@ -138,14 +134,14 @@ func Test_Rating_2(t *testing.T) {
 
 	err := m1.Rate(8.5)
 	if err != nil {
-		t.Fatalf(err.Error())
+		t.Fatal(err)
 	}
 
 	exp := 8.5
 	act := m1.Rating()
 
 	if act != exp {
-		t.Errorf("Actual rating : %.1f and Expected rating %.1f", act, exp)
+		t.Errorf("expected, %.1f, got %.1f", exp, act)
 	}
 }
 
@@ -160,20 +156,20 @@ func Test_Rating_3(t *testing.T) {
 	m1.Play(100)
 	err := m1.Rate(8.3)
 	if err != nil {
-		t.Fatalf(err.Error())
+		t.Fatal(err)
 	}
 
 	m1.Play(200)
 	err = m1.Rate(9.7)
 	if err != nil {
-		t.Fatalf(err.Error())
+		t.Fatal(err)
 	}
 
 	exp := 9.0
 	act := m1.Rating()
 
 	if act != exp {
-		t.Errorf("Actual rating : %.1f and Expected rating %.1f", act, exp)
+		t.Errorf("expected, %.1f, got %.1f", exp, act)
 	}
 }
 
@@ -188,19 +184,19 @@ func Test_Rating_4(t *testing.T) {
 	m1.Play(100)
 	err := m1.Rate(8.3)
 	if err != nil {
-		t.Fatalf(err.Error())
+		t.Fatal(err)
 	}
 
 	m1.Play(200)
 	err = m1.Rate(9.6)
 	if err != nil {
-		t.Fatalf(err.Error())
+		t.Fatal(err)
 	}
 
 	exp := 8.95
 	act := m1.Rating()
 	if act != exp {
-		t.Errorf("Actual rating : %.1f and Expected rating %.1f", act, exp)
+		t.Errorf("expected, %.1f, got %.1f", exp, act)
 	}
 }
 
@@ -222,7 +218,7 @@ func Test_String_1(t *testing.T) {
 	exp := "Avengers (185m) 82.5%"
 	act := m1.String()
 	if act != exp {
-		t.Errorf("Actual rating : %s and Expected rating %s", act, exp)
+		t.Errorf("expected %s, got %s", exp, act)
 	}
 }
 
@@ -234,9 +230,8 @@ func Test_Theatre_Play_1(t *testing.T) {
 	}
 
 	err := t1.Play(100)
-	e := "no movies to play"
-	if err.Error() != e {
-		t.Errorf(err.Error())
+	if err == nil {
+		t.Fatal("expected an error and got none")
 	}
 }
 
@@ -258,7 +253,7 @@ func Test_Theatre_Play_2(t *testing.T) {
 
 	err := t1.Play(100, &m1, &m2)
 	if err != nil {
-		t.Errorf(err.Error())
+		t.Error(err)
 	}
 }
 
@@ -273,9 +268,9 @@ func Test_generateRandomNumber(t *testing.T) {
 
 func Test_critiqueFn_1(t *testing.T) {
 	_, err := critiqueFn(nil)
-	e := "no movie for rating"
-	if err.Error() != e {
-		t.Errorf(err.Error())
+
+	if err == nil {
+		t.Fatal("expected an error and got none")
 	}
 }
 
@@ -286,7 +281,7 @@ func Test_critiqueFn_2(t *testing.T) {
 	}
 	n, err := critiqueFn(&m1)
 	if err != nil {
-		t.Fatalf(err.Error())
+		t.Fatal(err)
 	}
 	if n < min || n > max {
 		t.Errorf("n : %f is not in expected range{%d,%d}", n, min, max)
@@ -300,9 +295,9 @@ func Test_Critique_1(t *testing.T) {
 
 	var movies []*Movie
 	err := t1.Critique(movies, critiqueFn)
-	e := "no movies to Critique"
-	if err.Error() != e {
-		t.Fatalf(err.Error())
+
+	if err == nil {
+		t.Fatal("expected an error and got none")
 	}
 }
 
@@ -321,13 +316,12 @@ func Test_Critique_2(t *testing.T) {
 		Length: 165,
 	}
 
-	var movies []*Movie
-	movies = append(movies, &m1, &m2)
+	movies := []*Movie{&m1, &m2}
 
 	err := t1.Critique(movies, critiqueFn)
 
 	if err != nil {
-		t.Fatalf(err.Error())
+		t.Fatal(err)
 	}
 }
 
@@ -345,13 +339,12 @@ func Test_Critique_3(t *testing.T) {
 		Length: 165,
 	}
 
-	var movies []*Movie
-	movies = append(movies, &m1, &m2)
+	movies := []*Movie{&m1, &m2}
 
 	critiqueFn = nil
 	err := t1.Critique(movies, critiqueFn)
-	e := "CritiqueFn is nil"
-	if err.Error() != e {
-		t.Fatalf(err.Error())
+
+	if err == nil {
+		t.Fatal(err)
 	}
 }
