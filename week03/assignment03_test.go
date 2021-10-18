@@ -345,6 +345,6 @@ func Test_Critique_3(t *testing.T) {
 	err := t1.Critique(movies, critiqueFn)
 
 	if err == nil {
-		t.Fatal(err)
+		t.Fatal("expected an error and got none")
 	}
 }
