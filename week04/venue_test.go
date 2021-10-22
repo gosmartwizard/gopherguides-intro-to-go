@@ -42,6 +42,7 @@ func Test_Venue_2(t *testing.T) {
 
 	var buf bytes.Buffer
 	var v Venue
+
 	v.Log = &buf
 
 	err := v.Entertain(100, d, m, y)
@@ -63,6 +64,9 @@ func Test_Play_1(t *testing.T) {
 
 	var buf bytes.Buffer
 	var v Venue
+
+	v.Audience = 50
+
 	v.Log = &buf
 
 	err := v.play(y)
@@ -84,6 +88,9 @@ func Test_Play_2(t *testing.T) {
 
 	var buf bytes.Buffer
 	var v Venue
+
+	v.Audience = 50
+
 	v.Log = &buf
 
 	err := v.play(m)
@@ -105,6 +112,9 @@ func Test_Play_3(t *testing.T) {
 
 	var buf bytes.Buffer
 	var v Venue
+
+	v.Audience = 50
+
 	v.Log = &buf
 
 	err := v.play(d)

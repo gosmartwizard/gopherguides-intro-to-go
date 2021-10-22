@@ -19,6 +19,10 @@ func (d Dance) Name() string {
 
 func (d Dance) Perform(v Venue) error {
 
+	if v.Audience == 0 {
+		return fmt.Errorf("there are %d audience to perform", v.Audience)
+	}
+
 	fmt.Printf("%s performance started \n", d.Groupname)
 	fmt.Printf("%s is performing %s theme by %d members \n", d.Groupname, d.Theme, d.Members)
 	fmt.Printf("%s performance is successfully completed \n", d.Groupname)
