@@ -2,6 +2,7 @@ package week04
 
 import (
 	"bytes"
+	"fmt"
 	"testing"
 )
 
@@ -17,12 +18,23 @@ func Test_Dance_Perform(t *testing.T) {
 
 	var buf bytes.Buffer
 	var v Venue
+
 	v.Log = &buf
+
+	v.Audience = 50
 
 	err := d.Perform(v)
 
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
+	}
+
+	exp := "Dhee2021 has performed for 50 people. \n"
+
+	act := fmt.Sprint(v.Log)
+
+	if exp != act {
+		t.Errorf(" Expected : %s , actual : %s", exp, act)
 	}
 }
 
@@ -38,12 +50,15 @@ func Test_Dance_Name(t *testing.T) {
 
 	var buf bytes.Buffer
 	var v Venue
+
 	v.Log = &buf
 
-	exp := d.Name()
+	exp := d.Groupname
 
-	if exp != d.Groupname {
-		t.Errorf("Expected : %s, act : %s", exp, d.Groupname)
+	act := d.Name()
+
+	if exp != act {
+		t.Errorf("Expected : %s, Actual : %s", exp, act)
 	}
 }
 
@@ -59,11 +74,22 @@ func Test_Dance_Teardown(t *testing.T) {
 
 	var buf bytes.Buffer
 	var v Venue
+
 	v.Log = &buf
 
-	err := d.Perform(v)
+	v.Audience = 50
+
+	err := d.Teardown(v)
 
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
+	}
+
+	exp := "Dhee2021 has completed teardown. \n"
+
+	act := fmt.Sprint(v.Log)
+
+	if exp != act {
+		t.Errorf(" Expected : %s , actual : %s", exp, act)
 	}
 }

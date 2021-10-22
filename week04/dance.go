@@ -23,6 +23,8 @@ func (d Dance) Perform(v Venue) error {
 	fmt.Printf("%s is performing %s theme by %d members \n", d.Groupname, d.Theme, d.Members)
 	fmt.Printf("%s performance is successfully completed \n", d.Groupname)
 
+	fmt.Fprintf(v.Log, "%s has performed for %d people. \n", d.Groupname, v.Audience)
+
 	return nil
 }
 
@@ -30,6 +32,8 @@ func (d Dance) Teardown(v Venue) error {
 
 	fmt.Println("Setup started by ", d.Groupname)
 	fmt.Println("Setup completed by ", d.Groupname)
+
+	fmt.Fprintf(v.Log, "%s has completed teardown. \n", d.Groupname)
 
 	return nil
 }
