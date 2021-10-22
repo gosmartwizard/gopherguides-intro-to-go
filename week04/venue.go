@@ -5,18 +5,10 @@ import (
 	"io"
 )
 
-// snippet: venue
 type Venue struct {
 	Audience int
 	Log      io.Writer
 }
-
-/* func (v *Venue) Write(p []byte) (int, error) {
-	v.Log = p
-	return len(p), nil
-} */
-
-// snippet: venue
 
 func (v *Venue) Entertain(audience int, acts ...Entertainer) error {
 	if len(acts) == 0 {

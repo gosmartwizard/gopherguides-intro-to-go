@@ -13,22 +13,23 @@ type Dance struct {
 func (d Dance) Name() string {
 
 	fmt.Println("Group Name : ", d.Groupname)
+
 	return d.Groupname
 }
 
 func (d Dance) Perform(v Venue) error {
 
-	fmt.Printf("%s is performing %s theme by %d members for %d audience\n", d.Groupname, d.Theme, d.Members, v.Audience)
-	return nil
-}
+	fmt.Printf("%s performance started \n", d.Groupname)
+	fmt.Printf("%s is performing %s theme by %d members \n", d.Groupname, d.Theme, d.Members)
+	fmt.Printf("%s performance is successfully completed \n", d.Groupname)
 
-func (d Dance) Setup(v Venue) error {
-
-	fmt.Println("Setup completed by group : ", d.Groupname)
 	return nil
 }
 
 func (d Dance) Teardown(v Venue) error {
-	fmt.Println("TearDown completed by group : ", d.Groupname)
+
+	fmt.Println("Setup started by ", d.Groupname)
+	fmt.Println("Setup completed by ", d.Groupname)
+
 	return nil
 }
