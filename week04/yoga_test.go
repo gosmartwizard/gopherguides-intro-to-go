@@ -2,7 +2,6 @@ package week04
 
 import (
 	"bytes"
-	"fmt"
 	"testing"
 )
 
@@ -26,15 +25,15 @@ func Test_Yoga_Perform(t *testing.T) {
 	err := y.Perform(v)
 
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	exp := "Isha2021 has performed for 50 people. \n"
 
-	act := fmt.Sprint(v.Log)
+	act := buf.String()
 
 	if exp != act {
-		t.Errorf(" Expected : %s , actual : %s", exp, act)
+		t.Fatalf("expected : %s , actual : %s", exp, act)
 	}
 }
 
@@ -58,7 +57,7 @@ func Test_Yoga_Name(t *testing.T) {
 	act := y.Name()
 
 	if exp != act {
-		t.Errorf("Expected : %s, Actual : %s", exp, act)
+		t.Fatalf("expected : %s, Actual : %s", exp, act)
 	}
 }
 
@@ -82,14 +81,14 @@ func Test_Yoga_Teardown(t *testing.T) {
 	err := y.Teardown(v)
 
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	exp := "Isha2021 has completed teardown. \n"
 
-	act := fmt.Sprint(v.Log)
+	act := buf.String()
 
 	if exp != act {
-		t.Errorf(" Expected : %s , actual : %s", exp, act)
+		t.Fatalf("expected : %s , actual : %s", exp, act)
 	}
 }

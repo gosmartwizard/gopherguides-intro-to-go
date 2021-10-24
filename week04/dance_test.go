@@ -34,7 +34,7 @@ func Test_Dance_Perform(t *testing.T) {
 	act := fmt.Sprint(v.Log)
 
 	if exp != act {
-		t.Errorf(" Expected : %s , actual : %s", exp, act)
+		t.Fatalf("expected : %s , actual : %s", exp, act)
 	}
 }
 
@@ -58,7 +58,7 @@ func Test_Dance_Name(t *testing.T) {
 	act := d.Name()
 
 	if exp != act {
-		t.Errorf("Expected : %s, Actual : %s", exp, act)
+		t.Fatalf("expected : %s, Actual : %s", exp, act)
 	}
 }
 
@@ -90,6 +90,6 @@ func Test_Dance_Teardown(t *testing.T) {
 	act := fmt.Sprint(v.Log)
 
 	if exp != act {
-		t.Errorf(" Expected : %s , actual : %s", exp, act)
+		t.Fatalf("expected : %s , actual : %s", exp, act)
 	}
 }

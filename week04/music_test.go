@@ -2,7 +2,6 @@ package week04
 
 import (
 	"bytes"
-	"fmt"
 	"testing"
 )
 
@@ -29,10 +28,10 @@ func Test_Music_Perform(t *testing.T) {
 
 	exp := "Raaga2021 has performed for 50 people. \n"
 
-	act := fmt.Sprint(v.Log)
+	act := buf.String()
 
 	if exp != act {
-		t.Errorf(" Expected : %s , actual : %s", exp, act)
+		t.Fatalf("expected : %s , actual : %s", exp, act)
 	}
 }
 
@@ -56,7 +55,7 @@ func Test_Music_Name(t *testing.T) {
 	act := m.Name()
 
 	if exp != act {
-		t.Errorf("Expected : %s, Actual : %s", exp, act)
+		t.Fatalf("expected : %s, Actual : %s", exp, act)
 	}
 }
 
@@ -85,9 +84,9 @@ func Test_Music_Setup(t *testing.T) {
 
 	exp := "Raaga2021 has completed setup. \n"
 
-	act := fmt.Sprint(v.Log)
+	act := buf.String()
 
 	if exp != act {
-		t.Errorf(" Expected : %s , actual : %s", exp, act)
+		t.Fatalf("expected : %s , actual : %s", exp, act)
 	}
 }

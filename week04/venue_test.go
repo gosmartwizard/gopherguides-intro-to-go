@@ -14,7 +14,7 @@ func Test_Venue_1(t *testing.T) {
 	err := v.Entertain(50)
 
 	if err == nil {
-		t.Errorf("Expected error but returned nil")
+		t.Fatalf("Expected error but returned nil")
 	}
 }
 
@@ -48,7 +48,7 @@ func Test_Venue_2(t *testing.T) {
 	err := v.Entertain(100, d, m, y)
 
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 }
 
@@ -72,7 +72,7 @@ func Test_Play_1(t *testing.T) {
 	err := v.play(y)
 
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 }
 
@@ -96,7 +96,7 @@ func Test_Play_2(t *testing.T) {
 	err := v.play(m)
 
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 }
 
@@ -120,6 +120,6 @@ func Test_Play_3(t *testing.T) {
 	err := v.play(d)
 
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 }
