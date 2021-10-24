@@ -1,7 +1,7 @@
 name: Tests
 on:
   push:
-    branches: [week04]
+    branches: [main week04]
   pull_request:
     branches: [main]
 
