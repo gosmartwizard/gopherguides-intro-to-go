@@ -92,6 +92,36 @@ func Test_All_2(t *testing.T) {
 	}
 }
 
+func Test_All_3(t *testing.T) {
+	t.Parallel()
+
+	m1 := Model{
+		"iPhone": "Iphone5",
+	}
+
+	m2 := Model{
+		"iPhone": "Iphone6",
+	}
+
+	s := Store{}
+
+	s.Insert("Mobiles", m1, m2)
+
+	_, err := s.All("Laptops")
+
+	if ok := IsErrTableNotFound(err); !ok {
+		t.Fatalf("expected: %#v,and got: %#v", "ErrTableNotFound", err)
+	}
+
+	exp := &ErrTableNotFound{
+		table: "Laptops",
+	}
+
+	if !reflect.DeepEqual(exp.Error(), err.Error()) {
+		t.Fatalf("expected: %#v,and got: %#v", exp, err)
+	}
+}
+
 func Test_Len_1(t *testing.T) {
 	t.Parallel()
 
