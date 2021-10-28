@@ -17,7 +17,7 @@ func Test_String_1(t *testing.T) {
 	act := c.String()
 
 	if exp != act {
-		t.Fatalf("expected : %s  and actual : %s", exp, act)
+		t.Fatalf("expected : %#v  and actual : %#v", exp, act)
 	}
 }
 
@@ -33,7 +33,7 @@ func Test_String_2(t *testing.T) {
 	act := c.String()
 
 	if exp != act {
-		t.Fatalf("expected : %s  and actual : %s", exp, act)
+		t.Fatalf("expected : %#v  and actual : %#v", exp, act)
 	}
 }
 
@@ -49,7 +49,7 @@ func Test_String_3(t *testing.T) {
 	act := c.String()
 
 	if exp != act {
-		t.Fatalf("expected : %s  and actual : %s", exp, act)
+		t.Fatalf("expected : %#v  and actual : %#v", exp, act)
 	}
 }
 
@@ -65,7 +65,7 @@ func Test_String_4(t *testing.T) {
 	act := c.String()
 
 	if exp != act {
-		t.Fatalf("expected : %s  and actual : %s", exp, act)
+		t.Fatalf("expected : %#v  and actual : %#v", exp, act)
 	}
 }
 
@@ -78,7 +78,7 @@ func Test_String_5(t *testing.T) {
 	act := c.String()
 
 	if exp != act {
-		t.Fatalf("expected : %s  and actual : %s", exp, act)
+		t.Fatalf("expected : %#v  and actual : %#v", exp, act)
 	}
 }
 
@@ -124,10 +124,6 @@ func Test_TableDrivenTests_String(t *testing.T) {
 			if tt.expected != got {
 				t.Fatalf("expected: %#v, got: %#v", tt.expected, got)
 			}
-
-			if !reflect.DeepEqual(tt.expected, got) {
-				t.Fatalf("expected: %#v, got: %#v", tt.expected, got)
-			}
 		})
 	}
 }
@@ -149,7 +145,7 @@ func Test_Match_1(t *testing.T) {
 	act := c.Match(m)
 
 	if exp != act {
-		t.Fatalf("expected : %v  and actual : %v", exp, act)
+		t.Fatalf("expected : %#v  and actual : %#v", exp, act)
 	}
 }
 
@@ -170,7 +166,7 @@ func Test_Match_2(t *testing.T) {
 	act := c.Match(m)
 
 	if exp != act {
-		t.Fatalf("expected : %v  and actual : %v", exp, act)
+		t.Fatalf("expected : %#v  and actual : %#v", exp, act)
 	}
 }
 
@@ -185,7 +181,7 @@ func Test_Match_3(t *testing.T) {
 	act := c.Match(m)
 
 	if exp != act {
-		t.Fatalf("expected : %v  and actual : %v", exp, act)
+		t.Fatalf("expected : %#v  and actual : %#v", exp, act)
 	}
 }
 
@@ -206,7 +202,7 @@ func Test_Match_4(t *testing.T) {
 	act := c.Match(m)
 
 	if exp != act {
-		t.Fatalf("expected : %v  and actual : %v", exp, act)
+		t.Fatalf("expected : %#v  and actual : %#v", exp, act)
 	}
 }
 
@@ -228,7 +224,7 @@ func Test_Match_5(t *testing.T) {
 	act := c.Match(m)
 
 	if exp != act {
-		t.Fatalf("expected : %v  and actual : %v", exp, act)
+		t.Fatalf("expected : %#v  and actual : %#v", exp, act)
 	}
 }
 
@@ -250,7 +246,7 @@ func Test_Match_6(t *testing.T) {
 	act := c.Match(m)
 
 	if exp != act {
-		t.Fatalf("expected : %v  and actual : %v", exp, act)
+		t.Fatalf("expected : %#v  and actual : %#v", exp, act)
 	}
 }
 
@@ -269,7 +265,7 @@ func Test_Match_7(t *testing.T) {
 	act := c.Match(m)
 
 	if exp != act {
-		t.Fatalf("expected : %v  and actual : %v", exp, act)
+		t.Fatalf("expected : %#v  and actual : %#v", exp, act)
 	}
 }
 
@@ -288,6 +284,76 @@ func Test_Match_8(t *testing.T) {
 	act := c.Match(m)
 
 	if exp != act {
-		t.Fatalf("expected : %v  and actual : %v", exp, act)
+		t.Fatalf("expected : %#v  and actual : %#v", exp, act)
+	}
+}
+
+func Test_TableDrivenTests_Match(t *testing.T) {
+	t.Parallel()
+
+	table := []struct {
+		description string
+		clause      Clauses
+		model       Model
+		expected    bool
+	}{
+		{
+			description: "Test_Match_1",
+			clause:      Clauses{"NaveenReddy": "IshaanReddy", "KunaReddy": "KarthikeyaReddy"},
+			model:       Model{"NaveenReddy": "IshaanReddy", "KunaReddy": "KarthikeyaReddy"},
+			expected:    true,
+		},
+		{
+			description: "Test_Match_2",
+			clause:      Clauses{"NaveenReddy": 49, "KunaReddy": 99},
+			model:       Model{"NaveenReddy": 49, "KunaReddy": 50},
+			expected:    false,
+		},
+		{
+			description: "Test_Match_3",
+			clause:      Clauses{},
+			model:       Model{},
+			expected:    true,
+		},
+		{
+			description: "Test_Match_4",
+			clause:      Clauses{"NaveenReddy": "", "KunaReddy": 99},
+			model:       Model{"NaveenReddy": "", "KunaReddy": 99},
+			expected:    true,
+		},
+		{
+			description: "Test_Match_5",
+			clause:      Clauses{"NaveenReddy": "IshaanReddy", "KunaReddy": "KarthikeyaReddy"},
+			model:       Model{"NaveenReddy": "IshaanReddy", "KunaReddy": "KarthikeyaReddy", "Ravanamma": "Kunareddy"},
+			expected:    true,
+		},
+		{
+			description: "Test_Match_6",
+			clause:      Clauses{"NaveenReddy": "IshaanReddy", "KunaReddy": "KarthikeyaReddy", "Ravanamma": "Kunareddy"},
+			model:       Model{"NaveenReddy": "IshaanReddy", "KunaReddy": "KarthikeyaReddy"},
+			expected:    false,
+		},
+		{
+			description: "Test_Match_7",
+			clause:      Clauses{"NaveenReddy": "IshaanReddy", "KunaReddy": "KarthikeyaReddy", "Ravanamma": "Kunareddy"},
+			model:       Model{},
+			expected:    false,
+		},
+		{
+			description: "Test_Match_8",
+			clause:      Clauses{},
+			model:       Model{"NaveenReddy": "IshaanReddy", "KunaReddy": "KarthikeyaReddy", "Ravanamma": "Kunareddy"},
+			expected:    true,
+		},
+	}
+
+	for _, tt := range table {
+		t.Run(tt.description, func(t *testing.T) {
+			got := tt.clause.Match(tt.model)
+
+			if !reflect.DeepEqual(tt.expected, got) {
+				t.Fatalf("expected: %#v, got: %#v", tt.expected, got)
+			}
+		})
 	}
 }
