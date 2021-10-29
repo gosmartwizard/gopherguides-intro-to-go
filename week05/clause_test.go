@@ -82,10 +82,10 @@ func Test_String_5(t *testing.T) {
 	}
 }
 
-func Test_TableDrivenTests_String(t *testing.T) {
+/* func Test_TableDrivenTests_String(t *testing.T) {
 	t.Parallel()
 
-	table := []struct {
+	tcs := []struct {
 		description string
 		clause      Clauses
 		expected    string
@@ -117,16 +117,20 @@ func Test_TableDrivenTests_String(t *testing.T) {
 		},
 	}
 
-	for _, tt := range table {
-		t.Run(tt.description, func(t *testing.T) {
-			got := tt.clause.String()
+	for _, tc := range tcs {
+		tc := tc
 
-			if tt.expected != got {
-				t.Fatalf("expected: %#v, got: %#v", tt.expected, got)
+		t.Run(tc.description, func(t *testing.T) {
+			t.Parallel()
+
+			got := tc.clause.String()
+
+			if tc.expected != got {
+				t.Fatalf("expected: %#v, got: %#v", tc.expected, got)
 			}
 		})
 	}
-}
+} */
 
 func Test_Match_1(t *testing.T) {
 	t.Parallel()
@@ -291,7 +295,7 @@ func Test_Match_8(t *testing.T) {
 func Test_TableDrivenTests_Match(t *testing.T) {
 	t.Parallel()
 
-	table := []struct {
+	tcs := []struct {
 		description string
 		clause      Clauses
 		model       Model
@@ -347,12 +351,32 @@ func Test_TableDrivenTests_Match(t *testing.T) {
 		},
 	}
 
-	for _, tt := range table {
-		t.Run(tt.description, func(t *testing.T) {
-			got := tt.clause.Match(tt.model)
+	for _, tc := range tcs {
+		tc := tc //to avoid concurrency issue
+		t.Run(tc.description, func(t *testing.T) {
+			t.Parallel()
 
-			if !reflect.DeepEqual(tt.expected, got) {
-				t.Fatalf("expected: %#v, got: %#v", tt.expected, got)
+			got := tc.clause.Match(tc.model)
+
+			if !reflect.DeepEqual(tc.expected, got) {
+				t.Fatalf("expected: %#v, got: %#v", tc.expected, got)
+			}
+		})
+	}
+}
+
+func TestClauses_String(t *testing.T) {
+	tests := []struct {
+		name string
+		cls  Clauses
+		want string
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.cls.String(); got != tt.want {
+				t.Errorf("Clauses.String() = %v, want %v", got, tt.want)
 			}
 		})
 	}
