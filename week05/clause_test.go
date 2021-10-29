@@ -82,7 +82,7 @@ func Test_String_5(t *testing.T) {
 	}
 }
 
-/* func Test_TableDrivenTests_String(t *testing.T) {
+func Test_TableDrivenTests_String(t *testing.T) {
 	t.Parallel()
 
 	tcs := []struct {
@@ -130,7 +130,7 @@ func Test_String_5(t *testing.T) {
 			}
 		})
 	}
-} */
+}
 
 func Test_Match_1(t *testing.T) {
 	t.Parallel()
@@ -360,23 +360,6 @@ func Test_TableDrivenTests_Match(t *testing.T) {
 
 			if !reflect.DeepEqual(tc.expected, got) {
 				t.Fatalf("expected: %#v, got: %#v", tc.expected, got)
-			}
-		})
-	}
-}
-
-func TestClauses_String(t *testing.T) {
-	tests := []struct {
-		name string
-		cls  Clauses
-		want string
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.cls.String(); got != tt.want {
-				t.Errorf("Clauses.String() = %v, want %v", got, tt.want)
 			}
 		})
 	}
