@@ -18,7 +18,7 @@ func Test_Insert_1(t *testing.T) {
 
 	ms := Models{m1, m2}
 
-	s := Store{}
+	s := &Store{}
 
 	s.Insert("Mobiles", m1, m2)
 
@@ -47,7 +47,7 @@ func Test_All_1(t *testing.T) {
 
 	ms := Models{m1, m2}
 
-	s := Store{}
+	s := &Store{}
 
 	s.Insert("Mobiles", m1, m2)
 
@@ -73,7 +73,7 @@ func Test_All_2(t *testing.T) {
 		"iPhone": "Iphone6",
 	}
 
-	s := Store{}
+	s := &Store{}
 
 	s.Insert("Mobiles", m1, m2)
 
@@ -103,7 +103,7 @@ func Test_All_3(t *testing.T) {
 		"iPhone": "Iphone6",
 	}
 
-	s := Store{}
+	s := &Store{}
 
 	s.Insert("Mobiles", m1, m2)
 
@@ -186,7 +186,7 @@ func Test_Select_1(t *testing.T) {
 		"iPhone": "Iphone5",
 	}
 
-	s := Store{}
+	s := &Store{}
 
 	s.Insert("Mobiles", m)
 
@@ -214,7 +214,7 @@ func Test_Select_2(t *testing.T) {
 		"iPhone": "Iphone5",
 	}
 
-	s := Store{}
+	s := &Store{}
 
 	s.Insert("Mobiles", m)
 
@@ -234,7 +234,7 @@ func Test_Select_3(t *testing.T) {
 
 	c := Clauses{}
 
-	s := Store{}
+	s := &Store{}
 
 	s.Insert("Mobiles", m)
 
@@ -262,7 +262,7 @@ func Test_Select_4(t *testing.T) {
 		"iPhone": "Iphone6",
 	}
 
-	s := Store{}
+	s := &Store{}
 
 	s.Insert("Mobiles", m)
 
