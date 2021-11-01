@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func Test_Errors_TableNotFound(t *testing.T) {
+func Test_ErrTableNotFound_TableNotFound(t *testing.T) {
 	t.Parallel()
 
 	m1 := Model{
@@ -37,7 +37,7 @@ func Test_Errors_TableNotFound(t *testing.T) {
 	}
 }
 
-func Test_Errors_Error(t *testing.T) {
+func Test_ErrNoRows_Error(t *testing.T) {
 	t.Parallel()
 
 	enr := &errNoRows{
@@ -53,7 +53,7 @@ func Test_Errors_Error(t *testing.T) {
 	}
 }
 
-func Test_Errors_RowNotFound(t *testing.T) {
+func Test_ErrNoRows_RowNotFound(t *testing.T) {
 	t.Parallel()
 
 	enr := &errNoRows{
@@ -69,7 +69,7 @@ func Test_Errors_RowNotFound(t *testing.T) {
 	}
 }
 
-func Test_Errors_AsErrNoRows_1(t *testing.T) {
+func Test_AsErrNoRows_1(t *testing.T) {
 	t.Parallel()
 
 	err := errors.New("Other errrr")
@@ -81,7 +81,7 @@ func Test_Errors_AsErrNoRows_1(t *testing.T) {
 	}
 }
 
-func Test_Errors_AsErrNoRows_2(t *testing.T) {
+func Test_AsErrNoRows_2(t *testing.T) {
 	t.Parallel()
 
 	err := &errNoRows{}
