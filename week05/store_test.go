@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func Test_Insert_1(t *testing.T) {
+func Test_Store_Insert(t *testing.T) {
 	t.Parallel()
 
 	m1 := Model{
@@ -34,7 +34,7 @@ func Test_Insert_1(t *testing.T) {
 
 }
 
-func Test_All_1(t *testing.T) {
+func Test_Store_All_1(t *testing.T) {
 	t.Parallel()
 
 	m1 := Model{
@@ -62,7 +62,7 @@ func Test_All_1(t *testing.T) {
 	}
 }
 
-func Test_All_2(t *testing.T) {
+func Test_Store_All_2(t *testing.T) {
 	t.Parallel()
 
 	m1 := Model{
@@ -92,7 +92,7 @@ func Test_All_2(t *testing.T) {
 	}
 }
 
-func Test_All_3(t *testing.T) {
+func Test_Store_All_3(t *testing.T) {
 	t.Parallel()
 
 	m1 := Model{
@@ -122,7 +122,7 @@ func Test_All_3(t *testing.T) {
 	}
 }
 
-func Test_Len_1(t *testing.T) {
+func Test_Store_Len_1(t *testing.T) {
 	t.Parallel()
 
 	m1 := Model{
@@ -149,7 +149,7 @@ func Test_Len_1(t *testing.T) {
 	}
 }
 
-func Test_Len_2(t *testing.T) {
+func Test_Store_Len_2(t *testing.T) {
 	t.Parallel()
 
 	m1 := Model{
@@ -175,7 +175,7 @@ func Test_Len_2(t *testing.T) {
 	}
 }
 
-func Test_Select_1(t *testing.T) {
+func Test_Store_Select_1(t *testing.T) {
 	t.Parallel()
 
 	m := Model{
@@ -203,7 +203,7 @@ func Test_Select_1(t *testing.T) {
 	}
 }
 
-func Test_Select_2(t *testing.T) {
+func Test_Store_Select_2(t *testing.T) {
 	t.Parallel()
 
 	m := Model{
@@ -225,7 +225,7 @@ func Test_Select_2(t *testing.T) {
 	}
 }
 
-func Test_Select_3(t *testing.T) {
+func Test_Store_Select_3(t *testing.T) {
 	t.Parallel()
 
 	m := Model{
@@ -251,7 +251,7 @@ func Test_Select_3(t *testing.T) {
 	}
 }
 
-func Test_Select_4(t *testing.T) {
+func Test_Store_Select_4(t *testing.T) {
 	t.Parallel()
 
 	m := Model{
