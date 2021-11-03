@@ -13,27 +13,27 @@ func Test_Clauses_String(t *testing.T) {
 		expected    string
 	}{
 		{
-			description: "Test_Clauses_String_1",
+			description: "Golden_Path_With_Strings",
 			clause:      Clauses{"NaveenReddy": "IshaanReddy", "KunaReddy": "KarthikeyaReddy"},
 			expected:    `"KunaReddy" = "KarthikeyaReddy" and "NaveenReddy" = "IshaanReddy"`,
 		},
 		{
-			description: "Test_Clauses_String_2",
+			description: "Golden_Path_With_Numbers",
 			clause:      Clauses{"Naveen": 99, "Kuna": 49},
 			expected:    `"Kuna" = '1' and "Naveen" = 'c'`,
 		},
 		{
-			description: "Test_Clauses_String_3",
+			description: "Golden_Path_With_Empty_Strings",
 			clause:      Clauses{"Naveen": "", "Kuna": ""},
 			expected:    `"Kuna" = "" and "Naveen" = ""`,
 		},
 		{
-			description: "Test_Clauses_String_4",
+			description: "Golden_Path_With_String_Number",
 			clause:      Clauses{"NaveenReddy": "Kunareddy", "HNo": 50},
 			expected:    `"HNo" = '2' and "NaveenReddy" = "Kunareddy"`,
 		},
 		{
-			description: "Test_Clauses_String_5",
+			description: "Golden_Path_With_Empty_Clauses",
 			clause:      Clauses{},
 			expected:    "",
 		},
@@ -62,49 +62,49 @@ func Test_Clauses_Match(t *testing.T) {
 		expected    bool
 	}{
 		{
-			description: "Test_Clauses_Match_1",
+			description: "Golden_Path_With_Strings",
 			clause:      Clauses{"NaveenReddy": "IshaanReddy", "KunaReddy": "KarthikeyaReddy"},
 			model:       Model{"NaveenReddy": "IshaanReddy", "KunaReddy": "KarthikeyaReddy"},
 			expected:    true,
 		},
 		{
-			description: "Test_Clauses_Match_2",
+			description: "Error_Path_With_Clause_Model",
 			clause:      Clauses{"NaveenReddy": 49, "KunaReddy": 99},
 			model:       Model{"NaveenReddy": 49, "KunaReddy": 50},
 			expected:    false,
 		},
 		{
-			description: "Test_Clauses_Match_3",
+			description: "Golden_Path_With_Empty_Clause_Model",
 			clause:      Clauses{},
 			model:       Model{},
 			expected:    true,
 		},
 		{
-			description: "Test_Clauses_Match_4",
+			description: "Golden_Path_With_Empty_String_Number",
 			clause:      Clauses{"NaveenReddy": "", "KunaReddy": 99},
 			model:       Model{"NaveenReddy": "", "KunaReddy": 99},
 			expected:    true,
 		},
 		{
-			description: "Test_Clauses_Match_5",
+			description: "Golden_Path_With_Model_Clauses",
 			clause:      Clauses{"NaveenReddy": "IshaanReddy", "KunaReddy": "KarthikeyaReddy"},
 			model:       Model{"NaveenReddy": "IshaanReddy", "KunaReddy": "KarthikeyaReddy", "Ravanamma": "Kunareddy"},
 			expected:    true,
 		},
 		{
-			description: "Test_Clauses_Match_6",
+			description: "Error_Path_With_Clauses_Model",
 			clause:      Clauses{"NaveenReddy": "IshaanReddy", "KunaReddy": "KarthikeyaReddy", "Ravanamma": "Kunareddy"},
 			model:       Model{"NaveenReddy": "IshaanReddy", "KunaReddy": "KarthikeyaReddy"},
 			expected:    false,
 		},
 		{
-			description: "Test_Clauses_Match_7",
+			description: "Error_Path_With_Empty_Model",
 			clause:      Clauses{"NaveenReddy": "IshaanReddy", "KunaReddy": "KarthikeyaReddy", "Ravanamma": "Kunareddy"},
 			model:       Model{},
 			expected:    false,
 		},
 		{
-			description: "Test_Clauses_Match_8",
+			description: "Golden_Path_With_Empty_Clauses",
 			clause:      Clauses{},
 			model:       Model{"NaveenReddy": "IshaanReddy", "KunaReddy": "KarthikeyaReddy", "Ravanamma": "Kunareddy"},
 			expected:    true,

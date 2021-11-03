@@ -80,32 +80,43 @@ func Test_ErrNoRows_RowNotFound(t *testing.T) {
 	}
 }
 
-func Test_AsErrNoRows_1(t *testing.T) {
+func Test_AsErrNoRows(t *testing.T) {
 	t.Parallel()
 
-	err := errors.New("Other errrr")
-
-	_, ok := AsErrNoRows(err)
-
-	if ok {
-		t.Fatalf("expected false, got: true")
-	}
-}
-
-func Test_AsErrNoRows_2(t *testing.T) {
-	t.Parallel()
-
-	err := &errNoRows{}
-
-	e, ok := AsErrNoRows(err)
-
-	if !ok {
-		t.Fatalf("expected true, got: false")
+	tcs := []struct {
+		description string
+		err         error
+		expected    bool
+	}{
+		{
+			description: "Other_Error",
+			err:         errors.New("Other errrr"),
+			expected:    false,
+		},
+		{
+			description: "Golden_Path_ErrNoRows",
+			err:         &errNoRows{},
+			expected:    true,
+		},
 	}
 
-	ok = IsErrNoRows(e)
+	for _, tc := range tcs {
 
-	if !ok {
-		t.Fatalf("expected true, got: false")
+		t.Run(tc.description, func(t *testing.T) {
+
+			err, ok := AsErrNoRows(tc.err)
+
+			if tc.expected != ok {
+				t.Fatalf("expected : %#v, got : %#v", tc.expected, ok)
+			}
+
+			if err != nil {
+				ok = IsErrNoRows(err)
+
+				if !ok {
+					t.Fatalf("expected true, got: false")
+				}
+			}
+		})
 	}
 }

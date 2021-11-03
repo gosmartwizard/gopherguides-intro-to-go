@@ -1,6 +1,7 @@
 package week05
 
 import (
+	"errors"
 	"testing"
 )
 
@@ -15,269 +16,259 @@ func assertModel(t *testing.T, act Model, exp Model) {
 func Test_Store_Insert(t *testing.T) {
 	t.Parallel()
 
-	m1 := Model{
-		"iPhone": "Iphone5",
+	tcs := []struct {
+		description string
+		models      Models
+		tn          string
+	}{
+		{
+			description: "Golden_Path",
+			models: Models{
+				Model{"iPhone": "Iphone5"},
+				Model{"iPhone": "Iphone6"},
+			},
+			tn: "Mobiles",
+		},
+		{
+			description: "No_Models",
+			models:      Models{},
+			tn:          "Mobiles",
+		},
 	}
 
-	m2 := Model{
-		"iPhone": "Iphone6",
-	}
+	for _, tc := range tcs {
 
-	ms := Models{m1, m2}
+		t.Run(tc.description, func(t *testing.T) {
 
-	s := &Store{}
+			s := &Store{}
 
-	s.Insert("Mobiles", m1, m2)
+			for _, m := range tc.models {
+				s.Insert(tc.tn, m)
+			}
 
-	for k, v1 := range s.data {
-		if k != "Mobiles" {
-			t.Fatalf("expected: %#v,and got: %#v", "Mobiles", k)
-		}
+			for k, v1 := range s.data {
+				if k != tc.tn {
+					t.Fatalf("expected: %#v,and got: %#v", "Mobiles", k)
+				}
 
-		for i, v2 := range ms {
-			assertModel(t, v1[i], v2)
-		}
-	}
-}
-
-func Test_Store_All_1(t *testing.T) {
-	t.Parallel()
-
-	m1 := Model{
-		"iPhone": "Iphone5",
-	}
-
-	m2 := Model{
-		"iPhone": "Iphone6",
-	}
-
-	ms := Models{m1, m2}
-
-	s := &Store{}
-
-	s.Insert("Mobiles", m1, m2)
-
-	mods, err := s.All("Mobiles")
-
-	if err != nil {
-		t.Fatalf("expected: nil, got error: %#v", err)
-	}
-
-	for i, m := range mods {
-		assertModel(t, m, ms[i])
+				for i, v2 := range tc.models {
+					assertModel(t, v1[i], v2)
+				}
+			}
+		})
 	}
 }
 
-func Test_Store_All_2(t *testing.T) {
+func Test_Store_All(t *testing.T) {
 	t.Parallel()
 
-	m1 := Model{
-		"iPhone": "Iphone5",
+	tcs := []struct {
+		description string
+		models      Models
+		itn         string
+		atn         string
+		expected    Models
+		err         error
+	}{
+		{
+			description: "Golden_Path",
+			models: Models{
+				Model{"iPhone": "Iphone5"},
+				Model{"iPhone": "Iphone6"},
+			},
+			itn: "Mobiles",
+			atn: "Mobiles",
+			expected: Models{
+				Model{"iPhone": "Iphone5"},
+				Model{"iPhone": "Iphone6"},
+			},
+			err: nil,
+		},
+		{
+			description: "Error_Table_Not_Found",
+			models: Models{
+				Model{"iPhone": "Iphone5"},
+				Model{"iPhone": "Iphone6"},
+			},
+			itn: "Mobiles",
+			atn: "Laptops",
+			expected: Models{
+				Model{"iPhone": "Iphone5"},
+				Model{"iPhone": "Iphone6"},
+			},
+			err: ErrTableNotFound{table: "Laptops"},
+		},
 	}
 
-	m2 := Model{
-		"iPhone": "Iphone6",
-	}
+	for _, tc := range tcs {
 
-	s := &Store{}
+		t.Run(tc.description, func(t *testing.T) {
 
-	s.Insert("Mobiles", m1, m2)
+			s := &Store{}
 
-	_, err := s.All("Laptops")
+			for _, m := range tc.models {
+				s.Insert(tc.itn, m)
+			}
 
-	exp := &ErrTableNotFound{
-		table: "Laptops",
-	}
+			mods, err := s.All(tc.atn)
 
-	if ok := IsErrTableNotFound(err); !ok {
-		t.Fatalf("expected: %#v,and got: %#v", exp, err)
+			if err != nil {
+				b := errors.Is(err, tc.err)
+				if !b {
+					t.Fatalf("expected : %#v, got : %#v", tc.err, err)
+				}
+
+				if ok := IsErrTableNotFound(err); !ok {
+					t.Fatalf("expected: %#v,and got: %#v", tc.err, err)
+				}
+
+				if tc.err.Error() != err.Error() {
+					t.Fatalf("expected: %#v,and got: %#v", tc.err, err)
+				}
+
+				return
+			}
+
+			for i, m := range mods {
+				assertModel(t, m, tc.expected[i])
+			}
+		})
 	}
 }
 
-func Test_Store_All_3(t *testing.T) {
+func Test_Store_Len(t *testing.T) {
 	t.Parallel()
 
-	m1 := Model{
-		"iPhone": "Iphone5",
+	tcs := []struct {
+		description string
+		models      Models
+		itn         string
+		ltn         string
+		expected    int
+		err         error
+	}{
+		{
+			description: "Golden_Path",
+			models: Models{
+				Model{"iPhone": "Iphone5"},
+				Model{"iPhone": "Iphone6"},
+			},
+			itn:      "Mobiles",
+			ltn:      "Mobiles",
+			expected: 2,
+			err:      nil,
+		},
+		{
+			description: "Error_Table_Not_Found",
+			models: Models{
+				Model{"iPhone": "Iphone5"},
+				Model{"iPhone": "Iphone6"},
+			},
+			itn:      "Mobiles",
+			ltn:      "Laptops",
+			expected: 0,
+			err:      ErrTableNotFound{table: "Laptops"},
+		},
 	}
 
-	m2 := Model{
-		"iPhone": "Iphone6",
-	}
+	for _, tc := range tcs {
 
-	s := &Store{}
+		t.Run(tc.description, func(t *testing.T) {
 
-	s.Insert("Mobiles", m1, m2)
+			s := Store{}
 
-	_, err := s.All("Laptops")
+			for _, m := range tc.models {
+				s.Insert(tc.itn, m)
+			}
 
-	exp := &ErrTableNotFound{
-		table: "Laptops",
-	}
+			len, err := s.Len(tc.ltn)
 
-	if ok := IsErrTableNotFound(err); !ok {
-		t.Fatalf("expected: %#v,and got: %#v", exp, err)
-	}
+			if err != nil {
+				b := errors.Is(err, tc.err)
+				if !b {
+					t.Fatalf("expected : %#v, got : %#v", tc.err, err)
+				}
+				return
+			}
 
-	if exp.Error() != err.Error() {
-		t.Fatalf("expected: %#v,and got: %#v", exp, err)
+			if tc.expected != len {
+				t.Fatalf("expected: %#v, got: %#v", tc.expected, len)
+			}
+		})
 	}
 }
 
-func Test_Store_Len_1(t *testing.T) {
+func Test_Store_Select(t *testing.T) {
 	t.Parallel()
 
-	m1 := Model{
-		"iPhone": "Iphone5",
+	tcs := []struct {
+		description string
+		model       Model
+		clause      Clauses
+		itn         string
+		stn         string
+		models      Models
+		err         error
+	}{
+		{
+			description: "Golden_Path",
+			model:       Model{"iPhone": "Iphone5"},
+			clause:      Clauses{"iPhone": "Iphone5"},
+			itn:         "Mobiles",
+			stn:         "Mobiles",
+			models:      Models{Model{"iPhone": "Iphone5"}},
+			err:         nil,
+		},
+		{
+			description: "Error_Table_Not_Found",
+			model:       Model{"iPhone": "Iphone5"},
+			clause:      Clauses{"iPhone": "Iphone5"},
+			itn:         "Mobiles",
+			stn:         "Laptops",
+			models:      Models{Model{"iPhone": "Iphone5"}},
+			err:         ErrTableNotFound{table: "Laptops"},
+		},
+		{
+			description: "Empty_Clauses",
+			model:       Model{"iPhone": "Iphone5"},
+			clause:      Clauses{},
+			itn:         "Mobiles",
+			stn:         "Mobiles",
+			models:      Models{Model{"iPhone": "Iphone5"}},
+			err:         nil,
+		},
+		{
+			description: "Error_No_Rows",
+			model:       Model{"iPhone": "Iphone5"},
+			clause:      Clauses{"iPhone": "Iphone6"},
+			itn:         "Mobiles",
+			stn:         "Mobiles",
+			models:      Models{Model{"iPhone": "Iphone5"}},
+			err:         &errNoRows{},
+		},
 	}
 
-	m2 := Model{
-		"iPhone": "Iphone6",
-	}
+	for _, tc := range tcs {
 
-	s := Store{}
+		t.Run(tc.description, func(t *testing.T) {
 
-	s.Insert("Mobiles", m1, m2)
+			s := &Store{}
 
-	len, err := s.Len("Mobiles")
+			s.Insert(tc.itn, tc.model)
 
-	if err != nil {
-		t.Fatalf("expected: nil, got error: %#v", err)
-	}
+			mods, err := s.Select(tc.stn, tc.clause)
 
-	exp := 2
+			if tc.err != nil {
+				b := errors.Is(err, tc.err)
+				if !b {
+					t.Fatalf("expected : %#v, got : %#v", tc.err, err)
+				}
+				return
+			}
 
-	if exp != len {
-		t.Fatalf("expected: %#v,and got: %#v", exp, len)
-	}
-}
-
-func Test_Store_Len_2(t *testing.T) {
-	t.Parallel()
-
-	m1 := Model{
-		"iPhone": "Iphone5",
-	}
-
-	m2 := Model{
-		"iPhone": "Iphone6",
-	}
-
-	s := Store{}
-
-	s.Insert("Mobiles", m1, m2)
-
-	len, err := s.Len("Laptops")
-
-	exp := &ErrTableNotFound{
-		table: "Laptops",
-	}
-
-	if ok := IsErrTableNotFound(err); !ok {
-		t.Fatalf("expected: %#v,and got: %#v", exp, err)
-	}
-
-	expLen := 0
-
-	if expLen != len {
-		t.Fatalf("expected: %#v,and got: %#v", expLen, len)
-	}
-}
-
-func Test_Store_Select_1(t *testing.T) {
-	t.Parallel()
-
-	m := Model{
-		"iPhone": "Iphone5",
-	}
-
-	c := Clauses{
-		"iPhone": "Iphone5",
-	}
-
-	s := &Store{}
-
-	s.Insert("Mobiles", m)
-
-	mods, err := s.Select("Mobiles", c)
-
-	if err != nil {
-		t.Fatalf("expected: nil, got error: %#v", err)
-	}
-
-	exp := Models{m}
-
-	for i, m := range mods {
-		assertModel(t, m, exp[i])
-	}
-}
-
-func Test_Store_Select_2(t *testing.T) {
-	t.Parallel()
-
-	m := Model{
-		"iPhone": "Iphone5",
-	}
-
-	c := Clauses{
-		"iPhone": "Iphone5",
-	}
-
-	s := &Store{}
-
-	s.Insert("Mobiles", m)
-
-	_, err := s.Select("Laptops", c)
-
-	if err == nil {
-		t.Fatal("expected error , got nil")
-	}
-}
-
-func Test_Store_Select_3(t *testing.T) {
-	t.Parallel()
-
-	m := Model{
-		"iPhone": "Iphone5",
-	}
-
-	c := Clauses{}
-
-	s := &Store{}
-
-	s.Insert("Mobiles", m)
-
-	mods, err := s.Select("Mobiles", c)
-
-	if err != nil {
-		t.Fatalf("expected: nil, got error: %#v", err)
-	}
-
-	exp := Models{m}
-
-	for i, m := range mods {
-		assertModel(t, m, exp[i])
-	}
-}
-
-func Test_Store_Select_4(t *testing.T) {
-	t.Parallel()
-
-	m := Model{
-		"iPhone": "Iphone5",
-	}
-
-	c := Clauses{
-		"iPhone": "Iphone6",
-	}
-
-	s := &Store{}
-
-	s.Insert("Mobiles", m)
-
-	_, err := s.Select("Mobiles", c)
-
-	if ok := IsErrNoRows(err); !ok {
-		t.Fatalf("expected: %#v,and got: %#v", "IsErrNoRows", err)
+			for i, m := range mods {
+				assertModel(t, m, tc.models[i])
+			}
+		})
 	}
 }
