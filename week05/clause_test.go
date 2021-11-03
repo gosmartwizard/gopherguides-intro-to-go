@@ -1,7 +1,6 @@
 package week05
 
 import (
-	"reflect"
 	"testing"
 )
 
@@ -41,10 +40,8 @@ func Test_Clauses_String(t *testing.T) {
 	}
 
 	for _, tc := range tcs {
-		tc := tc
 
 		t.Run(tc.description, func(t *testing.T) {
-			t.Parallel()
 
 			got := tc.clause.String()
 
@@ -115,13 +112,12 @@ func Test_Clauses_Match(t *testing.T) {
 	}
 
 	for _, tc := range tcs {
-		tc := tc
+
 		t.Run(tc.description, func(t *testing.T) {
-			t.Parallel()
 
 			got := tc.clause.Match(tc.model)
 
-			if !reflect.DeepEqual(tc.expected, got) {
+			if tc.expected != got {
 				t.Fatalf("expected: %#v, got: %#v", tc.expected, got)
 			}
 		})

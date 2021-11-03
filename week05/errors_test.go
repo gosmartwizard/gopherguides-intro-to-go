@@ -3,7 +3,6 @@ package week05
 import (
 	"errors"
 	"fmt"
-	"reflect"
 	"testing"
 )
 
@@ -58,14 +57,26 @@ func Test_ErrNoRows_RowNotFound(t *testing.T) {
 
 	enr := &errNoRows{
 		table: "iPad",
+		clauses: Clauses{
+			"name":    "iPadAir2",
+			"version": "ios10",
+		},
 	}
 
-	_, got := enr.RowNotFound()
+	table, clauses := enr.RowNotFound()
 
-	exp := Clauses{}
+	exp := "iPad"
+	act := table
 
-	if !reflect.DeepEqual(exp, got) {
-		fmt.Printf("expected: %#v, got : %#v", exp, got)
+	if exp != act {
+		t.Fatalf("expected : %#v, got : %#v", exp, act)
+	}
+
+	expLen := len(enr.clauses)
+	actLen := len(clauses)
+
+	if expLen != actLen {
+		fmt.Printf("expected: %#v, got : %#v", expLen, actLen)
 	}
 }
 

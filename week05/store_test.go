@@ -1,9 +1,16 @@
 package week05
 
 import (
-	"reflect"
 	"testing"
 )
+
+func assertModel(t *testing.T, act Model, exp Model) {
+	for i, m := range exp {
+		if m != act[i] {
+			t.Fatalf("expected : %#v, got : %#v", m, act[i])
+		}
+	}
+}
 
 func Test_Store_Insert(t *testing.T) {
 	t.Parallel()
@@ -22,16 +29,15 @@ func Test_Store_Insert(t *testing.T) {
 
 	s.Insert("Mobiles", m1, m2)
 
-	for k, v := range s.data {
+	for k, v1 := range s.data {
 		if k != "Mobiles" {
 			t.Fatalf("expected: %#v,and got: %#v", "Mobiles", k)
 		}
 
-		if !reflect.DeepEqual(ms, v) {
-			t.Fatalf("expected: %#v,and got: %#v", ms, v)
+		for i, v2 := range ms {
+			assertModel(t, v1[i], v2)
 		}
 	}
-
 }
 
 func Test_Store_All_1(t *testing.T) {
@@ -57,8 +63,8 @@ func Test_Store_All_1(t *testing.T) {
 		t.Fatalf("expected: nil, got error: %#v", err)
 	}
 
-	if !reflect.DeepEqual(ms, mods) {
-		t.Fatalf("expected: %#v,and got: %#v", ms, mods)
+	for i, m := range mods {
+		assertModel(t, m, ms[i])
 	}
 }
 
@@ -79,15 +85,11 @@ func Test_Store_All_2(t *testing.T) {
 
 	_, err := s.All("Laptops")
 
-	if ok := IsErrTableNotFound(err); !ok {
-		t.Fatalf("expected: %#v,and got: %#v", "ErrTableNotFound", err)
-	}
-
 	exp := &ErrTableNotFound{
 		table: "Laptops",
 	}
 
-	if !reflect.DeepEqual(exp, err) {
+	if ok := IsErrTableNotFound(err); !ok {
 		t.Fatalf("expected: %#v,and got: %#v", exp, err)
 	}
 }
@@ -109,15 +111,15 @@ func Test_Store_All_3(t *testing.T) {
 
 	_, err := s.All("Laptops")
 
-	if ok := IsErrTableNotFound(err); !ok {
-		t.Fatalf("expected: %#v,and got: %#v", "ErrTableNotFound", err)
-	}
-
 	exp := &ErrTableNotFound{
 		table: "Laptops",
 	}
 
-	if !reflect.DeepEqual(exp.Error(), err.Error()) {
+	if ok := IsErrTableNotFound(err); !ok {
+		t.Fatalf("expected: %#v,and got: %#v", exp, err)
+	}
+
+	if exp.Error() != err.Error() {
 		t.Fatalf("expected: %#v,and got: %#v", exp, err)
 	}
 }
@@ -144,7 +146,8 @@ func Test_Store_Len_1(t *testing.T) {
 	}
 
 	exp := 2
-	if !reflect.DeepEqual(exp, len) {
+
+	if exp != len {
 		t.Fatalf("expected: %#v,and got: %#v", exp, len)
 	}
 }
@@ -166,12 +169,18 @@ func Test_Store_Len_2(t *testing.T) {
 
 	len, err := s.Len("Laptops")
 
-	if ok := IsErrTableNotFound(err); !ok {
-		t.Fatalf("expected: %#v,and got: %#v", "ErrTableNotFound", err)
+	exp := &ErrTableNotFound{
+		table: "Laptops",
 	}
 
-	if !reflect.DeepEqual(0, len) {
-		t.Fatalf("expected: %#v,and got: %#v", 0, len)
+	if ok := IsErrTableNotFound(err); !ok {
+		t.Fatalf("expected: %#v,and got: %#v", exp, err)
+	}
+
+	expLen := 0
+
+	if expLen != len {
+		t.Fatalf("expected: %#v,and got: %#v", expLen, len)
 	}
 }
 
@@ -190,7 +199,7 @@ func Test_Store_Select_1(t *testing.T) {
 
 	s.Insert("Mobiles", m)
 
-	ms, err := s.Select("Mobiles", c)
+	mods, err := s.Select("Mobiles", c)
 
 	if err != nil {
 		t.Fatalf("expected: nil, got error: %#v", err)
@@ -198,8 +207,8 @@ func Test_Store_Select_1(t *testing.T) {
 
 	exp := Models{m}
 
-	if !reflect.DeepEqual(exp, ms) {
-		t.Fatalf("expected: %#v,and got: %#v", exp, ms)
+	for i, m := range mods {
+		assertModel(t, m, exp[i])
 	}
 }
 
@@ -238,7 +247,7 @@ func Test_Store_Select_3(t *testing.T) {
 
 	s.Insert("Mobiles", m)
 
-	ms, err := s.Select("Mobiles", c)
+	mods, err := s.Select("Mobiles", c)
 
 	if err != nil {
 		t.Fatalf("expected: nil, got error: %#v", err)
@@ -246,8 +255,8 @@ func Test_Store_Select_3(t *testing.T) {
 
 	exp := Models{m}
 
-	if !reflect.DeepEqual(exp, ms) {
-		t.Fatalf("expected: %#v,and got: %#v", exp, ms)
+	for i, m := range mods {
+		assertModel(t, m, exp[i])
 	}
 }
 
@@ -270,14 +279,5 @@ func Test_Store_Select_4(t *testing.T) {
 
 	if ok := IsErrNoRows(err); !ok {
 		t.Fatalf("expected: %#v,and got: %#v", "IsErrNoRows", err)
-	}
-
-	exp := &errNoRows{
-		clauses: c,
-		table:   "Mobiles",
-	}
-
-	if !reflect.DeepEqual(exp, err) {
-		t.Fatalf("expected: %#v,and got: %#v", exp, err)
 	}
 }
