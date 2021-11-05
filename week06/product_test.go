@@ -4,56 +4,7 @@ import (
 	"testing"
 )
 
-func Test_Product_1(t *testing.T) {
-	t.Parallel()
-
-	p := Product{
-		Quantity: 2,
-		builtBy:  Employee(1),
-	}
-
-	err := p.IsValid()
-
-	if err != nil {
-		t.Fatalf("expected : nil, got : %#v", err)
-	}
-}
-
-func Test_Product_2(t *testing.T) {
-	t.Parallel()
-
-	p := Product{
-		Quantity: 0,
-		builtBy:  Employee(1),
-	}
-
-	err := p.IsValid()
-
-	exp := ErrInvalidQuantity(p.Quantity)
-
-	if exp.Error() != err.Error() {
-		t.Fatalf("expected : %#v, got : %#v", exp, err)
-	}
-}
-
-func Test_Product_3(t *testing.T) {
-	t.Parallel()
-
-	p := Product{
-		Quantity: -9,
-		builtBy:  Employee(1),
-	}
-
-	err := p.IsValid()
-
-	exp := ErrInvalidQuantity(p.Quantity)
-
-	if exp.Error() != err.Error() {
-		t.Fatalf("expected : %#v, got : %#v", exp, err)
-	}
-}
-
-func Test_Product_4(t *testing.T) {
+func Test_Product_BuiltBy(t *testing.T) {
 	t.Parallel()
 
 	p := Product{
@@ -70,59 +21,144 @@ func Test_Product_4(t *testing.T) {
 	}
 }
 
-func Test_Product_5(t *testing.T) {
+func Test_Product_Build(t *testing.T) {
 	t.Parallel()
 
-	e := Employee(-9)
-
-	p := Product{
-		Quantity: 2,
-		builtBy:  1,
+	tcs := []struct {
+		description string
+		employee    Employee
+		product     Product
+		expected    error
+	}{
+		{
+			description: "Zero_Employee_Count",
+			employee:    Employee(0),
+			product:     Product{Quantity: 2},
+			expected:    ErrInvalidEmployee(0),
+		},
+		{
+			description: "Negative_Employee_Count",
+			employee:    Employee(-9),
+			product:     Product{Quantity: 2},
+			expected:    ErrInvalidEmployee(-9),
+		},
+		{
+			description: "Zero_Product_Quantity",
+			employee:    Employee(1),
+			product:     Product{Quantity: 0},
+			expected:    ErrInvalidQuantity(0),
+		},
+		{
+			description: "Negative_Product_Quantity",
+			employee:    Employee(1),
+			product:     Product{Quantity: -9},
+			expected:    ErrInvalidQuantity(-9),
+		},
+		{
+			description: "Positive_Employee_Count_Product_Quantity",
+			employee:    Employee(1),
+			product:     Product{Quantity: 2},
+			expected:    nil,
+		},
 	}
 
-	err := p.Build(e)
+	for _, tc := range tcs {
 
-	exp := ErrInvalidEmployee(-9)
+		t.Run(tc.description, func(t *testing.T) {
 
-	if exp.Error() != err.Error() {
-		t.Fatalf("expected : %#v, got : %#v", exp, err)
+			err := tc.product.Build(tc.employee)
+
+			if err != nil {
+				if tc.expected.Error() != err.Error() {
+					t.Fatalf("expected : %#v, got : %#v", tc.expected.Error(), err.Error())
+				}
+			}
+
+		})
 	}
 }
 
-func Test_Product_6(t *testing.T) {
+func Test_Product_IsValid(t *testing.T) {
 	t.Parallel()
 
-	e := Employee(1)
-
-	p := Product{
-		Quantity: 0,
-		builtBy:  e,
+	tcs := []struct {
+		description string
+		product     Product
+		expected    error
+	}{
+		{
+			description: "Zero_Product_Quantity",
+			product:     Product{Quantity: 0},
+			expected:    ErrInvalidQuantity(0),
+		},
+		{
+			description: "Negative_Product_Quantity",
+			product:     Product{Quantity: -9},
+			expected:    ErrInvalidQuantity(-9),
+		},
+		{
+			description: "Positive_Product_Quantity",
+			product:     Product{Quantity: 2},
+			expected:    nil,
+		},
 	}
 
-	err := p.Build(e)
+	for _, tc := range tcs {
 
-	exp := ErrInvalidQuantity(p.Quantity)
+		t.Run(tc.description, func(t *testing.T) {
 
-	if exp.Error() != err.Error() {
-		t.Fatalf("expected : %#v, got : %#v", exp, err)
+			err := tc.product.IsValid()
+
+			if err != nil {
+				if tc.expected.Error() != err.Error() {
+					t.Fatalf("expected : %#v, got : %#v", tc.expected.Error(), err)
+				}
+			}
+		})
 	}
 }
 
-func Test_Product_7(t *testing.T) {
+func Test_Product_IsBuilt(t *testing.T) {
 	t.Parallel()
 
-	e := Employee(1)
-
-	p := Product{
-		Quantity: -9,
-		builtBy:  e,
+	tcs := []struct {
+		description string
+		product     Product
+		expected    error
+	}{
+		{
+			description: "Zero_Product_Quantity",
+			product:     Product{Quantity: 0},
+			expected:    ErrInvalidQuantity(0),
+		},
+		{
+			description: "Negative_Product_Quantity",
+			product:     Product{Quantity: -9},
+			expected:    ErrInvalidQuantity(-9),
+		},
+		{
+			description: "Positive_Product_Quantity",
+			product:     Product{Quantity: 2, builtBy: 0},
+			expected:    ErrProductNotBuilt("product is not built: {2 0}"),
+		},
+		{
+			description: "Positive_Product_Quantity",
+			product:     Product{Quantity: 2, builtBy: 1},
+			expected:    nil,
+		},
 	}
 
-	err := p.Build(e)
+	for _, tc := range tcs {
 
-	exp := ErrInvalidQuantity(p.Quantity)
+		t.Run(tc.description, func(t *testing.T) {
 
-	if exp.Error() != err.Error() {
-		t.Fatalf("expected : %#v, got : %#v", exp, err)
+			err := tc.product.IsBuilt()
+
+			if err != nil {
+				if tc.expected.Error() != err.Error() {
+					t.Fatalf("expected : %#v, got : %#v", tc.expected.Error(), err)
+				}
+			}
+		})
 	}
 }

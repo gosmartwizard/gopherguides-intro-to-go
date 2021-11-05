@@ -46,6 +46,50 @@ func Test_Manager_Start(t *testing.T) {
 	}
 }
 
+func Test_Manager_Assign_ManagerStopped(t *testing.T) {
+	t.Parallel()
+
+	m := NewManager()
+
+	e := Employee(1)
+
+	p := &Product{
+		Quantity: 2,
+		builtBy:  e,
+	}
+
+	m.Stop()
+
+	err := m.Assign(p)
+
+	exp := ErrManagerStopped{}
+
+	if exp.Error() != err.Error() {
+		t.Fatalf("expected : %#v, got : %#v", exp, err)
+	}
+}
+
+func Test_Manager_Assign_InvalidQuantity(t *testing.T) {
+	t.Parallel()
+
+	m := NewManager()
+
+	e := Employee(1)
+
+	p := &Product{
+		Quantity: 0,
+		builtBy:  e,
+	}
+
+	err := m.Assign(p)
+
+	exp := ErrInvalidQuantity(p.Quantity)
+
+	if exp.Error() != err.Error() {
+		t.Fatalf("expected : %#v, got : %#v", exp, err)
+	}
+}
+
 func Test_Manager_Complete(t *testing.T) {
 	t.Parallel()
 
@@ -96,51 +140,7 @@ func Test_Manager_Complete(t *testing.T) {
 	}
 }
 
-func Test_Manager_Assign_ManagerStopped(t *testing.T) {
-	t.Parallel()
-
-	m := NewManager()
-
-	e := Employee(1)
-
-	p := &Product{
-		Quantity: 2,
-		builtBy:  e,
-	}
-
-	m.Stop()
-
-	err := m.Assign(p)
-
-	exp := ErrManagerStopped{}
-
-	if exp.Error() != err.Error() {
-		t.Fatalf("expected : %#v, got : %#v", exp, err)
-	}
-}
-
-func Test_Manager_Assign_InvalidQuantity(t *testing.T) {
-	t.Parallel()
-
-	m := NewManager()
-
-	e := Employee(1)
-
-	p := &Product{
-		Quantity: 0,
-		builtBy:  e,
-	}
-
-	err := m.Assign(p)
-
-	exp := ErrInvalidQuantity(p.Quantity)
-
-	if exp.Error() != err.Error() {
-		t.Fatalf("expected : %#v, got : %#v", exp, err)
-	}
-}
-
-func Test_Manager_6(t *testing.T) {
+func Test_Manager_Stop(t *testing.T) {
 	t.Parallel()
 
 	m := NewManager()
