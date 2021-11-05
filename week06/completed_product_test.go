@@ -61,3 +61,21 @@ func Test_Completed_Product_3(t *testing.T) {
 		t.Fatalf("expected : %#v, got : %#v ", exp.Error(), err.Error())
 	}
 }
+
+func Test_Completed_Product_4(t *testing.T) {
+	t.Parallel()
+
+	cp := CompletedProduct{
+		Employee: Employee(1),
+		Product: Product{
+			Quantity: 2,
+			builtBy:  1,
+		},
+	}
+
+	err := cp.IsValid()
+
+	if err != nil {
+		t.Fatalf("expected : nil, got : %#v ", err)
+	}
+}
