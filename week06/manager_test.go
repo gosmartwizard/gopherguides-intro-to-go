@@ -136,7 +136,7 @@ func Test_Manager_7(t *testing.T) {
 	}
 }
 
-func Test_Manager_Demonstration(t *testing.T) {
+/* func Test_Manager_Demonstration(t *testing.T) {
 	t.Parallel()
 
 	// ALWAYS use the NewManager function to
@@ -215,4 +215,4 @@ func Test_Manager_Demonstration(t *testing.T) {
 	if len(act) != buildCount {
 		t.Fatalf("expected %d, got %d", buildCount, len(act))
 	}
-}
+} */

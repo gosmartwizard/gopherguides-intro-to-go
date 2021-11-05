@@ -102,9 +102,9 @@ func Test_Employee_6(t *testing.T) {
 
 	go e.work(m)
 
-	go func(m *Manager) {
+	go func() {
 		m.Assign(&Product{Quantity: 2})
-	}(m)
+	}()
 
 	var act []CompletedProduct
 
@@ -118,4 +118,28 @@ func Test_Employee_6(t *testing.T) {
 			}
 		}
 	}()
+}
+
+func Test_Employee_7(t *testing.T) {
+	t.Parallel()
+
+	m := NewManager()
+
+	err := m.Start(3)
+
+	if err != nil {
+		t.Fatalf("expected : nil, got : %#v", err)
+	}
+}
+
+func Test_Employee_8(t *testing.T) {
+	t.Parallel()
+
+	m := NewManager()
+
+	e := Employee(1)
+
+	go e.work(m)
+
+	m.Stop()
 }
