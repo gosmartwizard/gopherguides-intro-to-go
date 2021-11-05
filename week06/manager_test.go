@@ -115,6 +115,27 @@ func Test_Manager_6(t *testing.T) {
 	m.Stop()
 }
 
+func Test_Manager_7(t *testing.T) {
+	t.Parallel()
+
+	m := NewManager()
+
+	e := Employee(1)
+
+	p := &Product{
+		Quantity: 0,
+		builtBy:  e,
+	}
+
+	err := m.Assign(p)
+
+	exp := ErrInvalidQuantity(p.Quantity)
+
+	if exp.Error() != err.Error() {
+		t.Fatalf("expected : %#v, got : %#v", exp, err)
+	}
+}
+
 func Test_Manager_Demonstration(t *testing.T) {
 	t.Parallel()
 
