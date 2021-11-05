@@ -82,6 +82,39 @@ func Test_Manager_4(t *testing.T) {
 	}
 }
 
+func Test_Manager_5(t *testing.T) {
+	t.Parallel()
+
+	m := NewManager()
+
+	e := Employee(1)
+
+	p := &Product{
+		Quantity: 2,
+		builtBy:  e,
+	}
+
+	m.Stop()
+
+	err := m.Assign(p)
+
+	exp := ErrManagerStopped{}
+
+	if exp.Error() != err.Error() {
+		t.Fatalf("expected : %#v, got : %#v", exp, err)
+	}
+}
+
+func Test_Manager_6(t *testing.T) {
+	t.Parallel()
+
+	m := NewManager()
+
+	m.Stop()
+
+	m.Stop()
+}
+
 func Test_Manager_Demonstration(t *testing.T) {
 	t.Parallel()
 
@@ -161,5 +194,4 @@ func Test_Manager_Demonstration(t *testing.T) {
 	if len(act) != buildCount {
 		t.Fatalf("expected %d, got %d", buildCount, len(act))
 	}
-
 }
