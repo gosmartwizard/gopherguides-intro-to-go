@@ -4,77 +4,99 @@ import (
 	"testing"
 )
 
-func Test_Manager_1(t *testing.T) {
+func Test_Manager_Start(t *testing.T) {
 	t.Parallel()
 
-	m := NewManager()
+	tcs := []struct {
+		description string
+		count       int
+		expected    error
+	}{
+		{
+			description: "Zero_Employee_Count",
+			count:       0,
+			expected:    ErrInvalidEmployeeCount(0),
+		},
+		{
+			description: "Negative_Employee_Count",
+			count:       -9,
+			expected:    ErrInvalidEmployeeCount(-9),
+		},
+		{
+			description: "Positive_Employee_Count",
+			count:       3,
+			expected:    nil,
+		},
+	}
 
-	err := m.Start(0)
+	for _, tc := range tcs {
 
-	exp := ErrInvalidEmployeeCount(0)
+		t.Run(tc.description, func(t *testing.T) {
 
-	if exp.Error() != err.Error() {
-		t.Fatalf("expected : %#v, got : %#v", exp, err)
+			m := NewManager()
+
+			err := m.Start(tc.count)
+
+			if err != nil {
+				if tc.expected.Error() != err.Error() {
+					t.Fatalf("expected : %#v, got : %#v", tc.expected.Error(), err)
+				}
+			}
+		})
 	}
 }
 
-func Test_Manager_2(t *testing.T) {
+func Test_Manager_Complete(t *testing.T) {
 	t.Parallel()
 
-	m := NewManager()
+	tcs := []struct {
+		description string
+		employee    Employee
+		product     Product
+		expected    error
+	}{
+		{
+			description: "Zero_Employee_Count",
+			employee:    Employee(0),
+			product:     Product{},
+			expected:    ErrInvalidEmployee(0),
+		},
+		{
+			description: "Negative_Employee_Count",
+			employee:    Employee(-9),
+			product:     Product{},
+			expected:    ErrInvalidEmployee(-9),
+		},
+		{
+			description: "Zero_Product_Quantity",
+			employee:    Employee(1),
+			product:     Product{Quantity: 0},
+			expected:    ErrInvalidQuantity(0),
+		},
+		{
+			description: "Negative_Product_Quantity",
+			employee:    Employee(1),
+			product:     Product{Quantity: -9},
+			expected:    ErrInvalidQuantity(-9),
+		},
+	}
 
-	err := m.Start(-9)
+	for _, tc := range tcs {
 
-	exp := ErrInvalidEmployeeCount(-9)
+		t.Run(tc.description, func(t *testing.T) {
 
-	if exp.Error() != err.Error() {
-		t.Fatalf("expected : %#v, got : %#v", exp, err)
+			m := NewManager()
+
+			err := m.Complete(tc.employee, &tc.product)
+
+			if tc.expected.Error() != err.Error() {
+				t.Fatalf("expected : %#v, got : %#v", tc.expected.Error(), err)
+			}
+		})
 	}
 }
 
-func Test_Manager_3(t *testing.T) {
-	t.Parallel()
-
-	m := NewManager()
-
-	e := Employee(-9)
-
-	p := &Product{
-		Quantity: 2,
-		builtBy:  1,
-	}
-
-	err := m.Complete(e, p)
-
-	exp := ErrInvalidEmployee(-9)
-
-	if exp.Error() != err.Error() {
-		t.Fatalf("expected : %#v, got : %#v", exp, err)
-	}
-}
-
-func Test_Manager_4(t *testing.T) {
-	t.Parallel()
-
-	m := NewManager()
-
-	e := Employee(1)
-
-	p := &Product{
-		Quantity: 0,
-		builtBy:  e,
-	}
-
-	err := m.Complete(e, p)
-
-	exp := ErrInvalidQuantity(p.Quantity)
-
-	if exp.Error() != err.Error() {
-		t.Fatalf("expected : %#v, got : %#v", exp, err)
-	}
-}
-
-func Test_Manager_5(t *testing.T) {
+func Test_Manager_Assign_ManagerStopped(t *testing.T) {
 	t.Parallel()
 
 	m := NewManager()
@@ -97,17 +119,7 @@ func Test_Manager_5(t *testing.T) {
 	}
 }
 
-func Test_Manager_6(t *testing.T) {
-	t.Parallel()
-
-	m := NewManager()
-
-	m.Stop()
-
-	m.Stop()
-}
-
-func Test_Manager_7(t *testing.T) {
+func Test_Manager_Assign_InvalidQuantity(t *testing.T) {
 	t.Parallel()
 
 	m := NewManager()
@@ -125,5 +137,21 @@ func Test_Manager_7(t *testing.T) {
 
 	if exp.Error() != err.Error() {
 		t.Fatalf("expected : %#v, got : %#v", exp, err)
+	}
+}
+
+func Test_Manager_6(t *testing.T) {
+	t.Parallel()
+
+	m := NewManager()
+
+	m.Stop()
+
+	m.Stop()
+
+	_, ok := <-m.Jobs()
+
+	if ok {
+		t.Fatalf("expected : false, got : %#v", ok)
 	}
 }
