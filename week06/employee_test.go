@@ -2,7 +2,6 @@ package week06
 
 import (
 	"testing"
-	"time"
 )
 
 func Test_Employee_InValid(t *testing.T) {
@@ -58,18 +57,17 @@ func Test_Employee_Work(t *testing.T) {
 		m.Assign(&Product{Quantity: 2})
 	}()
 
-	var act []CompletedProduct
+	select {
+	case cp := <-m.Completed():
 
-	go func() {
-		for cp := range m.Completed() {
-			act = append(act, cp)
-			if len(act) == 1 {
-				close(m.Jobs())
-				time.Sleep(time.Millisecond * 1000)
-				close(m.Errors())
-			}
+		if cp.Employee != e {
+			t.Fatalf("expected : %#v, got : %#v", e, cp)
 		}
-	}()
+
+	case <-m.Done():
+	}
+
+	m.Stop()
 }
 
 func Test_Employee_Work_Manager_Stop(t *testing.T) {
