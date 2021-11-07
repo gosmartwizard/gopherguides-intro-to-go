@@ -50,13 +50,13 @@ func Test_Product_Build(t *testing.T) {
 		expected    error
 	}{
 		{
-			description: "Zero_Employee_Count",
+			description: "Zero_Employee_Number",
 			employee:    Employee(0),
 			product:     Product{Quantity: 2},
 			expected:    ErrInvalidEmployee(0),
 		},
 		{
-			description: "Negative_Employee_Count",
+			description: "Negative_Employee_Number",
 			employee:    Employee(-9),
 			product:     Product{Quantity: 2},
 			expected:    ErrInvalidEmployee(-9),
