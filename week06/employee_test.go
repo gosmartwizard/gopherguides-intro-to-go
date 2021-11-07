@@ -177,4 +177,10 @@ func Test_Employee_9(t *testing.T) {
 		t.Fatal(err)
 	case <-m.Done():
 	}
+
+	exp := p.BuiltBy()
+
+	if exp != e {
+		t.Fatalf("expected : %#v, got : %#v", exp, e)
+	}
 }

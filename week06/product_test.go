@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-func Test_Product_BuiltBy(t *testing.T) {
+/* func Test_Product_BuiltBy(t *testing.T) {
 	t.Parallel()
 
 	p := Product{
@@ -19,7 +19,7 @@ func Test_Product_BuiltBy(t *testing.T) {
 	if exp != e {
 		t.Fatalf("expected : %#v, got : %#v", exp, e)
 	}
-}
+} */
 
 func Test_Product_Build(t *testing.T) {
 	t.Parallel()

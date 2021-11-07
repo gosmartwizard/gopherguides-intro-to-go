@@ -51,11 +51,8 @@ func Test_Manager_Assign_ManagerStopped(t *testing.T) {
 
 	m := NewManager()
 
-	e := Employee(1)
-
 	p := &Product{
 		Quantity: 2,
-		builtBy:  e,
 	}
 
 	m.Stop()
@@ -74,11 +71,8 @@ func Test_Manager_Assign_InvalidQuantity(t *testing.T) {
 
 	m := NewManager()
 
-	e := Employee(1)
-
 	p := &Product{
 		Quantity: 0,
-		builtBy:  e,
 	}
 
 	err := m.Assign(p)
