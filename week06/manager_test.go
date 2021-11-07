@@ -149,3 +149,53 @@ func Test_Manager_Stop(t *testing.T) {
 		t.Fatalf("expected : false, got : %#v", ok)
 	}
 }
+
+func Test_Manager_Assign(t *testing.T) {
+	t.Parallel()
+
+	tcs := []struct {
+		description string
+		employee    Employee
+		product     Product
+		expected    error
+	}{
+		{
+			description: "ErrInvalidEmployee_Zero_Employee_Number",
+			employee:    Employee(0),
+			product:     Product{Quantity: 2},
+			expected:    ErrInvalidEmployee(0),
+		},
+		{
+			description: "ErrInvalidEmployee_Negative_Employee_Number",
+			employee:    Employee(-9),
+			product:     Product{Quantity: 2},
+			expected:    ErrInvalidEmployee(-9),
+		},
+	}
+
+	for _, tc := range tcs {
+
+		t.Run(tc.description, func(t *testing.T) {
+
+			m := NewManager()
+
+			e := Employee(tc.employee)
+
+			go e.work(m)
+
+			go func() {
+				m.Assign(&tc.product)
+			}()
+
+			exp := ErrInvalidEmployee(tc.employee)
+
+			select {
+			case err := <-m.Errors():
+				if exp.Error() != err.Error() {
+					t.Fatalf("expected : %#v, got : %#v", exp, err)
+				}
+			case <-m.Done():
+			}
+		})
+	}
+}

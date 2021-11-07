@@ -4,22 +4,40 @@ import (
 	"testing"
 )
 
-/* func Test_Product_BuiltBy(t *testing.T) {
+func Test_Product_BuiltBy(t *testing.T) {
 	t.Parallel()
 
-	p := Product{
-		Quantity: 2,
-		builtBy:  1,
+	m := NewManager()
+
+	e := Employee(1)
+
+	go e.work(m)
+
+	p := &Product{Quantity: 1}
+
+	go m.Assign(p)
+
+	go func() {
+		for cp := range m.Completed() {
+			err := cp.IsValid()
+			if err == nil {
+				m.Stop()
+			}
+		}
+	}()
+
+	select {
+	case err := <-m.Errors():
+		t.Fatal(err)
+	case <-m.Done():
 	}
 
-	e := p.BuiltBy()
-
-	exp := Employee(1)
+	exp := p.BuiltBy()
 
 	if exp != e {
 		t.Fatalf("expected : %#v, got : %#v", exp, e)
 	}
-} */
+}
 
 func Test_Product_Build(t *testing.T) {
 	t.Parallel()

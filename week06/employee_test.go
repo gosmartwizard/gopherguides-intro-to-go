@@ -45,55 +45,7 @@ func Test_Employee_InValid(t *testing.T) {
 	}
 }
 
-func Test_Employee_4(t *testing.T) {
-	t.Parallel()
-
-	m := NewManager()
-
-	e := Employee(-1)
-
-	go e.work(m)
-
-	go func() {
-		m.Assign(&Product{Quantity: 2})
-	}()
-
-	exp := ErrInvalidEmployee(-1)
-
-	select {
-	case err := <-m.Errors():
-		if exp.Error() != err.Error() {
-			t.Fatalf("expected : %#v, got : %#v", exp, err)
-		}
-	case <-m.Done():
-	}
-}
-
-func Test_Employee_5(t *testing.T) {
-	t.Parallel()
-
-	m := NewManager()
-
-	e := Employee(0)
-
-	go e.work(m)
-
-	go func() {
-		m.Assign(&Product{Quantity: 2})
-	}()
-
-	exp := ErrInvalidEmployee(0)
-
-	select {
-	case err := <-m.Errors():
-		if exp.Error() != err.Error() {
-			t.Fatalf("expected : %#v, got : %#v", exp, err)
-		}
-	case <-m.Done():
-	}
-}
-
-func Test_Employee_6(t *testing.T) {
+func Test_Employee_Work(t *testing.T) {
 	t.Parallel()
 
 	m := NewManager()
@@ -120,19 +72,7 @@ func Test_Employee_6(t *testing.T) {
 	}()
 }
 
-func Test_Employee_7(t *testing.T) {
-	t.Parallel()
-
-	m := NewManager()
-
-	err := m.Start(3)
-
-	if err != nil {
-		t.Fatalf("expected : nil, got : %#v", err)
-	}
-}
-
-func Test_Employee_8(t *testing.T) {
+func Test_Employee_Work_Manager_Stop(t *testing.T) {
 	t.Parallel()
 
 	m := NewManager()
@@ -147,40 +87,5 @@ func Test_Employee_8(t *testing.T) {
 
 	if ok {
 		t.Fatalf("expected : false, got : %#v", ok)
-	}
-}
-
-func Test_Employee_9(t *testing.T) {
-	t.Parallel()
-
-	m := NewManager()
-
-	e := Employee(1)
-
-	go e.work(m)
-
-	p := &Product{Quantity: 1}
-
-	go m.Assign(p)
-
-	go func() {
-		for cp := range m.Completed() {
-			err := cp.IsValid()
-			if err == nil {
-				m.Stop()
-			}
-		}
-	}()
-
-	select {
-	case err := <-m.Errors():
-		t.Fatal(err)
-	case <-m.Done():
-	}
-
-	exp := p.BuiltBy()
-
-	if exp != e {
-		t.Fatalf("expected : %#v, got : %#v", exp, e)
 	}
 }
