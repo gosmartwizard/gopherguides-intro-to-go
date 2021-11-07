@@ -66,21 +66,42 @@ func Test_Manager_Assign_ManagerStopped(t *testing.T) {
 	}
 }
 
-func Test_Manager_Assign_InvalidQuantity(t *testing.T) {
+func Test_Manager_Assign(t *testing.T) {
 	t.Parallel()
 
-	m := NewManager()
-
-	p := &Product{
-		Quantity: 0,
+	tcs := []struct {
+		description string
+		product     Product
+		expected    error
+	}{
+		{
+			description: "ErrInvalidQuantity_Zero_Quantity",
+			product:     Product{Quantity: 0},
+			expected:    ErrInvalidQuantity(0),
+		},
+		{
+			description: "ErrInvalidQuantity_Negative_Quantity",
+			product:     Product{Quantity: -9},
+			expected:    ErrInvalidQuantity(-9),
+		},
 	}
 
-	err := m.Assign(p)
+	for _, tc := range tcs {
 
-	exp := ErrInvalidQuantity(p.Quantity)
+		t.Run(tc.description, func(t *testing.T) {
 
-	if exp.Error() != err.Error() {
-		t.Fatalf("expected : %#v, got : %#v", exp, err)
+			m := NewManager()
+
+			err := m.Assign(&tc.product)
+
+			exp := ErrInvalidQuantity(tc.product.Quantity)
+
+			if exp.Error() != err.Error() {
+				t.Fatalf("expected : %#v, got : %#v", exp, err)
+			}
+
+			m.Stop()
+		})
 	}
 }
 
@@ -147,56 +168,6 @@ func Test_Manager_Stop(t *testing.T) {
 
 	if ok {
 		t.Fatalf("expected : false, got : %#v", ok)
-	}
-}
-
-func Test_Manager_Assign(t *testing.T) {
-	t.Parallel()
-
-	tcs := []struct {
-		description string
-		employee    Employee
-		product     Product
-		expected    error
-	}{
-		{
-			description: "ErrInvalidEmployee_Zero_Employee_Number",
-			employee:    Employee(0),
-			product:     Product{Quantity: 2},
-			expected:    ErrInvalidEmployee(0),
-		},
-		{
-			description: "ErrInvalidEmployee_Negative_Employee_Number",
-			employee:    Employee(-9),
-			product:     Product{Quantity: 2},
-			expected:    ErrInvalidEmployee(-9),
-		},
-	}
-
-	for _, tc := range tcs {
-
-		t.Run(tc.description, func(t *testing.T) {
-
-			m := NewManager()
-
-			e := Employee(tc.employee)
-
-			go e.work(m)
-
-			go func() {
-				m.Assign(&tc.product)
-			}()
-
-			exp := ErrInvalidEmployee(tc.employee)
-
-			select {
-			case err := <-m.Errors():
-				if exp.Error() != err.Error() {
-					t.Fatalf("expected : %#v, got : %#v", exp, err)
-				}
-			case <-m.Done():
-			}
-		})
 	}
 }
 
