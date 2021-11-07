@@ -7,11 +7,11 @@ import (
 func Test_Product_BuiltBy(t *testing.T) {
 	t.Parallel()
 
+	e := Employee(0)
+
 	m := NewManager()
 
-	e := Employee(1)
-
-	go e.work(m)
+	m.Start(1)
 
 	p := &Product{Quantity: 1}
 
@@ -19,6 +19,7 @@ func Test_Product_BuiltBy(t *testing.T) {
 
 	go func() {
 		for cp := range m.Completed() {
+			e = cp.Employee
 			err := cp.IsValid()
 			if err == nil {
 				m.Stop()
