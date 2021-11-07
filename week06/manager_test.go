@@ -199,3 +199,19 @@ func Test_Manager_Assign(t *testing.T) {
 		})
 	}
 }
+
+func Test_Manager_Start_Manager_Stop(t *testing.T) {
+	t.Parallel()
+
+	m := NewManager()
+
+	m.Start(1)
+
+	m.Stop()
+
+	_, ok := <-m.Jobs()
+
+	if ok {
+		t.Fatalf("expected : false, got : %#v", ok)
+	}
+}

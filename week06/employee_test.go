@@ -49,41 +49,23 @@ func Test_Employee_Work(t *testing.T) {
 
 	m := NewManager()
 
-	e := Employee(1)
+	m.Start(1)
 
-	go e.work(m)
+	p := &Product{Quantity: 2}
 
 	go func() {
-		m.Assign(&Product{Quantity: 2})
+		m.Assign(p)
 	}()
 
 	select {
 	case cp := <-m.Completed():
 
-		if cp.Employee != e {
-			t.Fatalf("expected : %#v, got : %#v", e, cp)
+		if cp.Employee != p.BuiltBy() {
+			t.Fatalf("expected : %#v, got : %#v", p.builtBy, cp)
 		}
 
 	case <-m.Done():
 	}
 
 	m.Stop()
-}
-
-func Test_Employee_Work_Manager_Stop(t *testing.T) {
-	t.Parallel()
-
-	m := NewManager()
-
-	e := Employee(1)
-
-	go e.work(m)
-
-	m.Stop()
-
-	_, ok := <-m.Jobs()
-
-	if ok {
-		t.Fatalf("expected : false, got : %#v", ok)
-	}
 }
