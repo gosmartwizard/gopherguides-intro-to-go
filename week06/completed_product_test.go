@@ -1,81 +1,72 @@
 package week06
 
 import (
-	"fmt"
 	"testing"
 )
 
-func Test_Completed_Product_1(t *testing.T) {
+func Test_CompletedProduct_IsValid(t *testing.T) {
 	t.Parallel()
 
-	cp := CompletedProduct{
-		Employee: Employee(-8),
-	}
-
-	err := cp.IsValid()
-
-	exp := ErrInvalidEmployee(-8)
-
-	if exp.Error() != err.Error() {
-		t.Fatalf("expected : %#v, got : %#v", exp, err)
-	}
-}
-
-func Test_Completed_Product_2(t *testing.T) {
-	t.Parallel()
-
-	cp := CompletedProduct{
-		Employee: Employee(1),
-		Product: Product{
-			Quantity: -9,
-			builtBy:  Employee(1),
+	tcs := []struct {
+		description string
+		employee    Employee
+		product     Product
+		expected    error
+	}{
+		{
+			description: "Zero_Employee_NumberCount",
+			employee:    Employee(0),
+			product:     Product{},
+			expected:    ErrInvalidEmployee(0),
+		},
+		{
+			description: "Negative_Employee_Number",
+			employee:    Employee(-9),
+			product:     Product{},
+			expected:    ErrInvalidEmployee(-9),
+		},
+		{
+			description: "Zero_Product_Quantity",
+			employee:    Employee(1),
+			product:     Product{Quantity: 0},
+			expected:    ErrInvalidQuantity(0),
+		},
+		{
+			description: "Negative_Product_Quantity",
+			employee:    Employee(1),
+			product:     Product{Quantity: -9},
+			expected:    ErrInvalidQuantity(-9),
+		},
+		{
+			description: "Error_Product_Not_Built",
+			employee:    Employee(1),
+			product:     Product{Quantity: 2, builtBy: 0},
+			expected:    ErrProductNotBuilt("product is not built: {2 0}"),
+		},
+		{
+			description: "Positive_Employee_Count_Product_Quantity",
+			employee:    Employee(1),
+			product:     Product{Quantity: 2, builtBy: 1},
+			expected:    nil,
 		},
 	}
 
-	err := cp.IsValid()
+	for _, tc := range tcs {
 
-	exp := ErrInvalidQuantity(-9)
+		t.Run(tc.description, func(t *testing.T) {
 
-	if exp.Error() != err.Error() {
-		t.Fatalf("expected : %#v, got : %#v", exp, err)
-	}
+			cp := CompletedProduct{
+				Employee: tc.employee,
+				Product:  tc.product,
+			}
 
-}
+			err := cp.IsValid()
 
-func Test_Completed_Product_3(t *testing.T) {
-	t.Parallel()
-
-	cp := CompletedProduct{
-		Employee: Employee(1),
-		Product: Product{
-			Quantity: 2,
-			builtBy:  0,
-		},
-	}
-
-	err := cp.IsValid()
-
-	exp := ErrProductNotBuilt(fmt.Sprintf("product is not built: %v", cp.Product))
-
-	if exp.Error() != err.Error() {
-		t.Fatalf("expected : %#v, got : %#v ", exp.Error(), err.Error())
-	}
-}
-
-func Test_Completed_Product_4(t *testing.T) {
-	t.Parallel()
-
-	cp := CompletedProduct{
-		Employee: Employee(1),
-		Product: Product{
-			Quantity: 2,
-			builtBy:  1,
-		},
-	}
-
-	err := cp.IsValid()
-
-	if err != nil {
-		t.Fatalf("expected : nil, got : %#v ", err)
+			if err != nil {
+				if tc.expected.Error() != err.Error() {
+					t.Fatalf("expected : %#v, got : %#v", tc.expected.Error(), err.Error())
+				}
+			}
+		})
 	}
 }
