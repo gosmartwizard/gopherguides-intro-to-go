@@ -14,7 +14,7 @@ func Test_CompletedProduct_IsValid(t *testing.T) {
 		expected    error
 	}{
 		{
-			description: "Zero_Employee_NumberCount",
+			description: "Zero_Employee_Number",
 			employee:    Employee(0),
 			product:     Product{},
 			expected:    ErrInvalidEmployee(0),
