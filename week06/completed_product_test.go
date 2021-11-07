@@ -40,14 +40,8 @@ func Test_CompletedProduct_IsValid(t *testing.T) {
 		{
 			description: "Error_Product_Not_Built",
 			employee:    Employee(1),
-			product:     Product{Quantity: 2, builtBy: 0},
+			product:     Product{Quantity: 2},
 			expected:    ErrProductNotBuilt("product is not built: {2 0}"),
-		},
-		{
-			description: "Positive_Employee_Count_Product_Quantity",
-			employee:    Employee(1),
-			product:     Product{Quantity: 2, builtBy: 1},
-			expected:    nil,
 		},
 	}
 

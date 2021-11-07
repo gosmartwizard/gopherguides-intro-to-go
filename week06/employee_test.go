@@ -149,3 +149,32 @@ func Test_Employee_8(t *testing.T) {
 		t.Fatalf("expected : false, got : %#v", ok)
 	}
 }
+
+func Test_Employee_9(t *testing.T) {
+	t.Parallel()
+
+	m := NewManager()
+
+	e := Employee(1)
+
+	go e.work(m)
+
+	p := &Product{Quantity: 1}
+
+	go m.Assign(p)
+
+	go func() {
+		for cp := range m.Completed() {
+			err := cp.IsValid()
+			if err == nil {
+				m.Stop()
+			}
+		}
+	}()
+
+	select {
+	case err := <-m.Errors():
+		t.Fatal(err)
+	case <-m.Done():
+	}
+}

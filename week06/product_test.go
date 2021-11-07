@@ -138,13 +138,8 @@ func Test_Product_IsBuilt(t *testing.T) {
 		},
 		{
 			description: "Positive_Product_Quantity",
-			product:     Product{Quantity: 2, builtBy: 0},
+			product:     Product{Quantity: 2},
 			expected:    ErrProductNotBuilt("product is not built: {2 0}"),
-		},
-		{
-			description: "Positive_Product_Quantity",
-			product:     Product{Quantity: 2, builtBy: 1},
-			expected:    nil,
 		},
 	}
 
