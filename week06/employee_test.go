@@ -93,3 +93,19 @@ func Test_Employee_Work_Errors(t *testing.T) {
 
 	m.Stop()
 }
+
+func Test_Employee_Work_Close_Jobs(t *testing.T) {
+	t.Parallel()
+
+	m := NewManager()
+
+	m.Start(1)
+
+	close(m.Jobs())
+
+	_, ok := <-m.Jobs()
+
+	if ok {
+		t.Fatal("expected : false, got : true")
+	}
+}

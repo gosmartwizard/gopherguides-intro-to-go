@@ -142,4 +142,5 @@ func (m *Manager) Stop() {
 	close(m.quit)
 	close(m.jobs)
 	close(m.errs)
+	close(m.completed)
 }
