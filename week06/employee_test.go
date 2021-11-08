@@ -69,3 +69,27 @@ func Test_Employee_Work(t *testing.T) {
 
 	m.Stop()
 }
+
+func Test_Employee_Work_Errors(t *testing.T) {
+	t.Parallel()
+
+	m := NewManager()
+
+	m.Start(1)
+
+	p := &Product{Quantity: -2}
+
+	m.Jobs() <- p
+
+	select {
+	case err := <-m.Errors():
+
+		if err == nil {
+			t.Fatalf("expected : %#v, got : nil", err.Error())
+		}
+
+	case <-m.Done():
+	}
+
+	m.Stop()
+}
