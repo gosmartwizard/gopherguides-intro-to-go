@@ -35,6 +35,8 @@ func Test_Manager_Start(t *testing.T) {
 
 			m := NewManager()
 
+			defer m.Stop()
+
 			err := m.Start(tc.count)
 
 			if err != nil {
@@ -92,6 +94,8 @@ func Test_Manager_Assign(t *testing.T) {
 
 			m := NewManager()
 
+			defer m.Stop()
+
 			err := m.Assign(&tc.product)
 
 			exp := ErrInvalidQuantity(tc.product.Quantity)
@@ -99,8 +103,6 @@ func Test_Manager_Assign(t *testing.T) {
 			if exp.Error() != err.Error() {
 				t.Fatalf("expected : %#v, got : %#v", exp, err)
 			}
-
-			m.Stop()
 		})
 	}
 }
@@ -145,6 +147,8 @@ func Test_Manager_Complete(t *testing.T) {
 		t.Run(tc.description, func(t *testing.T) {
 
 			m := NewManager()
+
+			defer m.Stop()
 
 			err := m.Complete(tc.employee, &tc.product)
 

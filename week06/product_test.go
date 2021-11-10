@@ -11,6 +11,8 @@ func Test_Product_BuiltBy(t *testing.T) {
 
 	m := NewManager()
 
+	defer m.Stop()
+
 	m.Start(1)
 
 	p := &Product{Quantity: 1}

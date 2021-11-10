@@ -49,6 +49,8 @@ func Test_Employee_Work(t *testing.T) {
 
 	m := NewManager()
 
+	defer m.Stop()
+
 	m.Start(1)
 
 	p := &Product{Quantity: 2}
@@ -66,14 +68,14 @@ func Test_Employee_Work(t *testing.T) {
 
 	case <-m.Done():
 	}
-
-	m.Stop()
 }
 
 func Test_Employee_Work_Errors(t *testing.T) {
 	t.Parallel()
 
 	m := NewManager()
+
+	defer m.Stop()
 
 	m.Start(1)
 
@@ -90,8 +92,6 @@ func Test_Employee_Work_Errors(t *testing.T) {
 
 	case <-m.Done():
 	}
-
-	m.Stop()
 }
 
 func Test_Employee_Work_Close_Jobs(t *testing.T) {
@@ -99,10 +99,13 @@ func Test_Employee_Work_Close_Jobs(t *testing.T) {
 
 	m := NewManager()
 
+	//defer m.Stop()
+
 	m.Start(1)
 
-	close(m.Jobs())
-
+	if m.Jobs() != nil {
+		close(m.Jobs())
+	}
 	_, ok := <-m.Jobs()
 
 	if ok {

@@ -139,8 +139,19 @@ func (m *Manager) Stop() {
 	m.stopped = true
 
 	// close all channels
-	close(m.quit)
-	close(m.jobs)
-	close(m.errs)
-	close(m.completed)
+	if m.quit != nil {
+		close(m.quit)
+	}
+
+	if m.jobs != nil {
+		close(m.jobs)
+	}
+
+	if m.errs != nil {
+		close(m.errs)
+	}
+
+	if m.completed != nil {
+		close(m.completed)
+	}
 }
