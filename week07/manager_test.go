@@ -49,7 +49,7 @@ func Test_Run_Timeout(t *testing.T) {
 
 	defer cancel()
 
-	go Run(ctx, 1, &Product{Quantity: 500})
+	Run(ctx, 1, &Product{Quantity: 500})
 
 	select {
 	case <-rootCtx.Done():
