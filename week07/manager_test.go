@@ -3,6 +3,7 @@ package week07
 import (
 	"context"
 	"os/signal"
+	"runtime"
 	"syscall"
 	"testing"
 	"time"
@@ -66,7 +67,11 @@ func Test_Run_Timeout(t *testing.T) {
 func Test_Run_NotifySignal(t *testing.T) {
 	t.Parallel()
 
-	const TEST_SIGNAL = syscall.SIGINT
+	if runtime.GOOS == "windows" {
+		t.Skip()
+	}
+
+	const TEST_SIGNAL = syscall.SIGUSR2
 
 	rootCtx := context.Background()
 
