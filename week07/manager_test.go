@@ -49,7 +49,7 @@ func Test_Run_Timeout(t *testing.T) {
 
 	defer cancel()
 
-	Run(ctx, 1, &Product{Quantity: 500})
+	go Run(ctx, 1, &Product{Quantity: 25000})
 
 	select {
 	case <-rootCtx.Done():
@@ -74,10 +74,10 @@ func Test_Run_NotifySignal(t *testing.T) {
 
 	defer cancel()
 
-	go Run(sigCtx, 1, &Product{Quantity: 2500})
+	go Run(sigCtx, 1, &Product{Quantity: 25000})
 
 	go func() {
-		time.Sleep(time.Second * 5)
+		time.Sleep(time.Second * 10)
 		syscall.Kill(syscall.Getpid(), TEST_SIGNAL)
 	}()
 

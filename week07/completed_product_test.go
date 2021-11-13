@@ -1,8 +1,6 @@
 package week07
 
-import (
-	"testing"
-)
+import "testing"
 
 func Test_CompletedProduct_IsValid(t *testing.T) {
 	t.Parallel()

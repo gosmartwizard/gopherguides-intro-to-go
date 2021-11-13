@@ -53,7 +53,6 @@ func (e Employee) work(ctx context.Context, m *Manager) {
 			// if there is no error, send the product back to the manager
 			m.Complete(e, p)
 		case <-ctx.Done():
-			m.Stop()
 		}
 	}
 }

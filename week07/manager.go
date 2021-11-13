@@ -41,11 +41,6 @@ func (m *Manager) Start(ctx context.Context, count int) error {
 		return ErrInvalidEmployeeCount(count)
 	}
 
-	go func() {
-		<-ctx.Done()
-		m.Stop()
-	}()
-
 	for i := 0; i < count; i++ {
 
 		e := Employee(i + 1)
@@ -207,8 +202,6 @@ func Run(ctx context.Context, count int, products ...*Product) ([]CompletedProdu
 
 	m := NewManager()
 
-	defer m.Stop()
-
 	m.Start(ctx, count)
 
 	var cps []CompletedProduct
@@ -223,15 +216,18 @@ func Run(ctx context.Context, count int, products ...*Product) ([]CompletedProdu
 	go func() {
 		for cp := range m.Completed() {
 			cps = append(cps, cp)
-			m.Stop()
+
+			if len(cps) == count {
+				m.Stop()
+			}
 		}
 	}()
 
 	select {
 	case err := <-m.Errors():
+		m.Stop()
 		return nil, err
 	case <-m.Done():
-	case <-ctx.Done():
 	}
 
 	return cps, nil
