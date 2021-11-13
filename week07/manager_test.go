@@ -4,6 +4,7 @@ import (
 	"context"
 	"os"
 	"os/signal"
+	"syscall"
 	"testing"
 	"time"
 )
@@ -78,7 +79,7 @@ func Test_Run_NotifySignal(t *testing.T) {
 
 	//sigCtx, cancel := signal.NotifyContext(rootCtx, TEST_SIGNAL)
 
-	sigCtx, cancel := signal.NotifyContext(rootCtx, os.Interrupt)
+	sigCtx, cancel := signal.NotifyContext(rootCtx, syscall.SIGTERM)
 
 	defer cancel()
 
@@ -94,7 +95,7 @@ func Test_Run_NotifySignal(t *testing.T) {
 			return
 		}
 
-		p.Signal(os.Interrupt)
+		p.Signal(syscall.SIGTERM)
 	}()
 
 	select {
