@@ -2,9 +2,6 @@ package week07
 
 import (
 	"context"
-	"os"
-	"os/signal"
-	"syscall"
 	"testing"
 	"time"
 )
@@ -64,22 +61,14 @@ func Test_Run_Timeout(t *testing.T) {
 	}
 }
 
-func Test_Run_NotifySignal(t *testing.T) {
+/* func Test_Run_NotifySignal(t *testing.T) {
 	t.Parallel()
 
-	/* fmt.Print("GOOS : \n", runtime.GOOS)
-
-	if runtime.GOOS == "windows" {
-		t.Skip()
-	} */
-
-	//const TEST_SIGNAL = syscall.SIGUSR2
+	const TEST_SIGNAL = syscall.SIGUSR2
 
 	rootCtx := context.Background()
 
-	//sigCtx, cancel := signal.NotifyContext(rootCtx, TEST_SIGNAL)
-
-	sigCtx, cancel := signal.NotifyContext(rootCtx, syscall.SIGTERM)
+	sigCtx, cancel := signal.NotifyContext(rootCtx, TEST_SIGNAL)
 
 	defer cancel()
 
@@ -87,15 +76,7 @@ func Test_Run_NotifySignal(t *testing.T) {
 
 	go func() {
 		time.Sleep(time.Second * 10)
-		//syscall.Kill(syscall.Getpid(), TEST_SIGNAL)
-
-		p, err := os.FindProcess(os.Getpid())
-
-		if err != nil {
-			return
-		}
-
-		p.Signal(syscall.SIGTERM)
+		syscall.Kill(syscall.Getpid(), TEST_SIGNAL)
 	}()
 
 	select {
@@ -110,7 +91,7 @@ func Test_Run_NotifySignal(t *testing.T) {
 	if exp != sigCtx.Err().Error() {
 		t.Fatalf("expected : %#v, got : %#v", exp, sigCtx.Err().Error())
 	}
-}
+} */
 
 func Test_Manager_Start(t *testing.T) {
 	t.Parallel()
