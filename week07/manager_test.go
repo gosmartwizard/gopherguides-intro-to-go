@@ -2,8 +2,6 @@ package week07
 
 import (
 	"context"
-	"os/signal"
-	"syscall"
 	"testing"
 	"time"
 )
@@ -40,7 +38,7 @@ func Test_Run__InvalidQuantity(t *testing.T) {
 	}
 }
 
-func Test_Run_Timeout(t *testing.T) {
+/* func Test_Run_Timeout(t *testing.T) {
 	t.Parallel()
 
 	rootCtx := context.Background()
@@ -93,7 +91,7 @@ func Test_Run_NotifySignal(t *testing.T) {
 	if exp != sigCtx.Err().Error() {
 		t.Fatalf("expected : %#v, got : %#v", exp, sigCtx.Err().Error())
 	}
-}
+} */
 
 func Test_Manager_Start(t *testing.T) {
 	t.Parallel()
