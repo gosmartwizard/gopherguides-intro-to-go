@@ -2,6 +2,7 @@ package week07
 
 import (
 	"context"
+	"fmt"
 	"os/signal"
 	"runtime"
 	"syscall"
@@ -66,6 +67,8 @@ func Test_Run_Timeout(t *testing.T) {
 
 func Test_Run_NotifySignal(t *testing.T) {
 	t.Parallel()
+
+	fmt.Print("GOOS : \n", runtime.GOOS)
 
 	if runtime.GOOS == "windows" {
 		t.Skip()
