@@ -2,10 +2,8 @@ package week07
 
 import (
 	"context"
-	"fmt"
+	"os"
 	"os/signal"
-	"runtime"
-	"syscall"
 	"testing"
 	"time"
 )
@@ -68,17 +66,19 @@ func Test_Run_Timeout(t *testing.T) {
 func Test_Run_NotifySignal(t *testing.T) {
 	t.Parallel()
 
-	fmt.Print("GOOS : \n", runtime.GOOS)
+	/* fmt.Print("GOOS : \n", runtime.GOOS)
 
 	if runtime.GOOS == "windows" {
 		t.Skip()
-	}
+	} */
 
-	const TEST_SIGNAL = syscall.SIGUSR2
+	//const TEST_SIGNAL = syscall.SIGUSR2
 
 	rootCtx := context.Background()
 
-	sigCtx, cancel := signal.NotifyContext(rootCtx, TEST_SIGNAL)
+	//sigCtx, cancel := signal.NotifyContext(rootCtx, TEST_SIGNAL)
+
+	sigCtx, cancel := signal.NotifyContext(rootCtx, os.Interrupt)
 
 	defer cancel()
 
@@ -86,7 +86,15 @@ func Test_Run_NotifySignal(t *testing.T) {
 
 	go func() {
 		time.Sleep(time.Second * 10)
-		syscall.Kill(syscall.Getpid(), TEST_SIGNAL)
+		//syscall.Kill(syscall.Getpid(), TEST_SIGNAL)
+
+		p, err := os.FindProcess(os.Getpid())
+
+		if err != nil {
+			return
+		}
+
+		p.Signal(os.Interrupt)
 	}()
 
 	select {
