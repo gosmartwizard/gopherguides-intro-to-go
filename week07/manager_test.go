@@ -66,7 +66,7 @@ func Test_Run_Timeout(t *testing.T) {
 func Test_Run_NotifySignal(t *testing.T) {
 	t.Parallel()
 
-	const TEST_SIGNAL = syscall.SIGUSR2
+	const TEST_SIGNAL = syscall.SIGINT
 
 	rootCtx := context.Background()
 
@@ -74,7 +74,7 @@ func Test_Run_NotifySignal(t *testing.T) {
 
 	defer cancel()
 
-	go Run(sigCtx, 1, &Product{Quantity: 50})
+	go Run(sigCtx, 1, &Product{Quantity: 25000})
 
 	go func() {
 		time.Sleep(time.Second * 10)
