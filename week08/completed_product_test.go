@@ -24,7 +24,7 @@ func Test_CompletedProduct_IsValid(t *testing.T) {
 			expected:    ErrInvalidEmployee(-9),
 		},
 		{
-			description: "Zero_Product_Materials",
+			description: "Error_Invalid_Materials",
 			employee:    Employee(1),
 			product:     Product{Materials: Materials{}},
 			expected:    ErrInvalidMaterials(0),
@@ -36,7 +36,7 @@ func Test_CompletedProduct_IsValid(t *testing.T) {
 			expected:    ErrProductNotBuilt("product is not built: [{oil:3x}, {wood:2x}]"),
 		},
 		{
-			description: "GoldenPath",
+			description: "Golden_Path",
 			employee:    Employee(1),
 			product:     Product{Materials: Materials{Wood: 2, Oil: 3}, builtBy: 1},
 			expected:    nil,

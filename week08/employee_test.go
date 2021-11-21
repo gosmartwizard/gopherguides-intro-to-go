@@ -52,6 +52,8 @@ func Test_Employee_Work(t *testing.T) {
 
 	m := &Manager{}
 
+	defer m.Stop()
+
 	ctx, err := m.Start(ctx, 1)
 
 	if err != nil {
@@ -87,6 +89,8 @@ func Test_Employee_Work_Errors(t *testing.T) {
 
 	m := &Manager{}
 
+	defer m.Stop()
+
 	ctx, err := m.Start(ctx, 1)
 
 	if err != nil {
@@ -118,13 +122,13 @@ func Test_Employee_Work_Close_Jobs(t *testing.T) {
 
 	m := &Manager{}
 
+	defer m.Stop()
+
 	_, err := m.Start(ctx, 1)
 
 	if err != nil {
 		t.Fatalf("expected : nil, got : %#v", err)
 	}
-
-	defer m.Stop()
 
 	if m.Jobs() != nil {
 		close(m.Jobs())
@@ -142,6 +146,8 @@ func Test_Employee_Work_ErrInvalidMaterials(t *testing.T) {
 	ctx := context.Background()
 
 	m := &Manager{}
+
+	defer m.Stop()
 
 	ctx, err := m.Start(ctx, 1)
 
@@ -166,6 +172,4 @@ func Test_Employee_Work_ErrInvalidMaterials(t *testing.T) {
 		}
 	case <-ctx.Done():
 	}
-
-	m.Stop()
 }
