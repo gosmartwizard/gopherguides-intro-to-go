@@ -115,31 +115,6 @@ func Test_Employee_Work_Errors(t *testing.T) {
 	}
 }
 
-func Test_Employee_Work_Close_Jobs(t *testing.T) {
-	t.Parallel()
-
-	ctx := context.Background()
-
-	m := &Manager{}
-
-	defer m.Stop()
-
-	_, err := m.Start(ctx, 1)
-
-	if err != nil {
-		t.Fatalf("expected : nil, got : %#v", err)
-	}
-
-	if m.Jobs() != nil {
-		close(m.Jobs())
-	}
-	_, ok := <-m.Jobs()
-
-	if ok {
-		t.Fatal("expected : false, got : true")
-	}
-}
-
 func Test_Employee_Work_ErrInvalidMaterials(t *testing.T) {
 	t.Parallel()
 
@@ -154,9 +129,12 @@ func Test_Employee_Work_ErrInvalidMaterials(t *testing.T) {
 	if err != nil {
 		t.Fatalf("expected : nil, got : %#v", err)
 	}
+
 	e := Employee(0)
 
-	go e.work(ctx, m)
+	go func() {
+		e.work(ctx, m)
+	}()
 
 	p := &Product{
 		Materials: Materials{},

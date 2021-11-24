@@ -17,6 +17,7 @@ type Manager struct {
 	errs      chan error
 	jobs      chan *Product
 	stopped   bool
+	stopOnce  sync.Once
 	sync.RWMutex
 }
 
@@ -80,9 +81,12 @@ func (m *Manager) Start(ctx context.Context, count int) (context.Context, error)
 // as employeess become available. An invalid product
 // will return an error.
 func (m *Manager) Assign(products ...*Product) error {
+	m.RLock()
 	if m.stopped {
+		m.RUnlock()
 		return ErrManagerStopped{}
 	}
+	m.RUnlock()
 
 	// loop through each product and assign it to an employee
 	for _, p := range products {
@@ -116,10 +120,12 @@ func (m *Manager) Complete(e Employee, p *Product) error {
 		return err
 	}
 
+	p.Lock()
 	cp := CompletedProduct{
 		Employee: e,
 		Product:  *p, // deference pointer to value type ype t
 	}
+	p.Unlock()
 
 	// fmt.Printf("TODO >> manager.go:102 cp %[1]T %[1]v\n", cp)
 	// Send completed product to Completed() channel
@@ -173,59 +179,34 @@ func (m *Manager) Errors() chan error {
 	return m.errs
 }
 
-func (m *Manager) IsJobsClosed() bool {
-	select {
-	case <-m.jobs:
-		return true
-	default:
-	}
-
-	return false
-}
-
-func (m *Manager) IsErrorsClosed() bool {
-	select {
-	case <-m.errs:
-		return true
-	default:
-	}
-
-	return false
-}
-
-func (m *Manager) IsCompletedClosed() bool {
-	select {
-	case <-m.completed:
-		return true
-	default:
-	}
-
-	return false
-}
-
 // Stop will stop the manager and clean up all resources.
 func (m *Manager) Stop() {
 
-	m.Lock()
-	defer m.Unlock()
-
-	m.cancel()
-
+	m.RLock()
 	if m.stopped {
+		m.RUnlock()
 		return
 	}
+	m.RUnlock()
 
-	m.stopped = true
+	m.stopOnce.Do(func() {
+		m.Lock()
+		defer m.Unlock()
 
-	if !m.IsErrorsClosed() && m.errs != nil {
-		close(m.errs)
-	}
+		m.cancel()
 
-	if !m.IsCompletedClosed() && m.completed != nil {
-		close(m.completed)
-	}
+		m.stopped = true
 
-	if !m.IsJobsClosed() && m.jobs != nil {
-		close(m.jobs)
-	}
+		if m.errs != nil {
+			close(m.errs)
+		}
+
+		if m.completed != nil {
+			close(m.completed)
+		}
+
+		if m.jobs != nil {
+			close(m.jobs)
+		}
+	})
 }

@@ -17,13 +17,20 @@ type Warehouse struct {
 
 // Start the warehouse
 func (w *Warehouse) Start(ctx context.Context) context.Context {
+	w.Lock()
 	ctx, w.cancel = context.WithCancel(ctx)
+	w.Unlock()
+
 	return ctx
 }
 
 // Stop the warehouse
 func (w *Warehouse) Stop() {
-	w.cancel()
+	w.RLock()
+	if w.cancel != nil {
+		w.cancel()
+	}
+	w.RUnlock()
 }
 
 // Retrieve quantity of material from the warehouse
@@ -53,20 +60,20 @@ func (w *Warehouse) fill(m Material) context.Context {
 	go func() {
 		defer cancel()
 
-		w.Lock()
-		defer w.Unlock()
-
-		if w.cap <= 0 {
-			w.cap = 10
-		}
-
-		if w.materials == nil {
-			w.materials = Materials{}
-		}
-
+		w.RLock()
 		cap := w.cap
 		mats := w.materials
+		w.RUnlock()
 
+		if cap <= 0 {
+			cap = 10
+		}
+
+		if mats == nil {
+			mats = Materials{}
+		}
+
+		w.Lock()
 		// until the warehouse is full of
 		// the material create the material and
 		// fill the warehouse
@@ -76,6 +83,9 @@ func (w *Warehouse) fill(m Material) context.Context {
 			mats[m]++
 			q = mats[m]
 		}
+
+		w.materials = mats
+		w.Unlock()
 	}()
 
 	return ctx

@@ -133,35 +133,3 @@ func Test_Manager_Complete(t *testing.T) {
 		})
 	}
 }
-
-func Test_Manager_Start_Manager_Stop(t *testing.T) {
-	t.Parallel()
-
-	ctx := context.Background()
-
-	m := &Manager{}
-
-	_, err := m.Start(ctx, 1)
-
-	if err != nil {
-		t.Fatalf("expected : nil, got : %#v", err)
-	}
-
-	m.Completed()
-	m.Jobs()
-	m.Errors()
-
-	m.Stop()
-
-	if false == m.IsJobsClosed() {
-		t.Fatal("expected : true, got : false")
-	}
-
-	if false == m.IsCompletedClosed() {
-		t.Fatal("expected : true, got : false")
-	}
-
-	if false == m.IsErrorsClosed() {
-		t.Fatal("expected : true, got : false")
-	}
-}
