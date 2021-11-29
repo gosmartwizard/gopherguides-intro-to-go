@@ -1,7 +1,7 @@
 
 
 # **NewsService Design**
-![alt text](NewService_Design.jpg)
+![alt text](NewService_HighLevel_Design.jpg)
 
 
 
