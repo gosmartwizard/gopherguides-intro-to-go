@@ -41,7 +41,7 @@ func (s *MockSource) PublishArticles(ctx context.Context) {
 			s.SourceStop()
 			return
 		case s.News <- s.getArticle():
-			fmt.Println("Article Published")
+			//fmt.Println("Article Published")
 		}
 	}
 }
