@@ -102,7 +102,7 @@ func Test_MockSource_Start_Stop(t *testing.T) {
 	mockSource.SourceStop()
 }
 
-func Test_MockSource_MultipleCategory(t *testing.T) {
+func Test_MockSource_MultipleCategory_WithTimeout(t *testing.T) {
 	t.Parallel()
 
 	rootCtx := context.Background()

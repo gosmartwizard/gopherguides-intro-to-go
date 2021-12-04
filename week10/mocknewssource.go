@@ -3,14 +3,12 @@ package week10
 import (
 	"context"
 	"fmt"
-	"math/rand"
-	"time"
 )
 
 func NewMockSource(name string) *MockSource {
 	s := &MockSource{}
 	s.name = name
-	s.News = make(chan Article)
+	s.News = make(chan []Article)
 	s.closed = false
 
 	return s
@@ -41,41 +39,40 @@ func (s *MockSource) PublishArticles(ctx context.Context) {
 			s.SourceStop()
 			return
 		case s.News <- s.getArticle():
-			//fmt.Println("Article Published")
 		}
 	}
 }
 
-func (ms *MockSource) getArticle() Article {
+func (ms *MockSource) getArticle() []Article {
 
 	//time.Sleep(time.Millisecond * 5000)
 
 	ms.RLock()
 
-	rand.Seed(time.Now().UnixNano())
-	min := 0
-	max := len(ms.categories) - 1
-	n := rand.Intn(max-min+1) + min
-
-	c := ms.categories[n]
-
+	var articles []Article
 	article := Article{}
-	if c == "Sports" {
-		article.Source = "Mock_News_Source"
-		article.Category = "Sports"
-		article.Description = "Sachin Tendulkar"
-	} else if c == "Tech" {
-		article.Source = "Mock_News_Source"
-		article.Category = "Tech"
-		article.Description = "GoLang"
-	} else if c == "Movies" {
-		article.Source = "Mock_News_Source"
-		article.Category = "Movies"
-		article.Description = "Avengers"
+
+	for _, category := range ms.categories {
+		if category == "Sports" {
+			article.Source = ms.name
+			article.Category = category
+			article.Description = "Sachin Tendulkar"
+		} else if category == "Tech" {
+			article.Source = ms.name
+			article.Category = category
+			article.Description = "GoLang"
+		} else if category == "Movies" {
+			article.Source = ms.name
+			article.Category = category
+			article.Description = "Avengers"
+		}
+
+		articles = append(articles, article)
 	}
+
 	ms.RUnlock()
 
-	return article
+	return articles
 }
 
 func (s *MockSource) SourceStop() {

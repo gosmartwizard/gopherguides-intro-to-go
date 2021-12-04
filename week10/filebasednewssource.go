@@ -3,15 +3,17 @@ package week10
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"time"
 )
 
-func NewFileBasedSource(name string) *FileBasedSource {
+func NewFileBasedSource(name string, filePath string) *FileBasedSource {
 	s := &FileBasedSource{}
 	s.name = name
-	s.News = make(chan Article)
+	s.filePath = filePath
+	s.News = make(chan []Article)
 	s.closed = false
 
 	return s
@@ -35,43 +37,38 @@ func (s *FileBasedSource) SourceStart(ctx context.Context, categories ...string)
 
 func (s *FileBasedSource) PublishArticles(ctx context.Context) {
 
-	go func(ctx context.Context) {
-		<-ctx.Done()
-
-		s.SourceStop()
-	}(ctx)
-
-	s.RLock()
-	defer s.RUnlock()
-
 	for {
-
-		fileBytes, err := ioutil.ReadFile("./newsarticles/*.json")
-
-		if err != nil {
-			panic(err)
+		select {
+		case <-ctx.Done():
+			fmt.Printf("Cancellation in source : %#v \n", s.name)
+			s.SourceStop()
+			return
+		case s.News <- s.GetArticles():
 		}
-
-		var articles []Article
-
-		err = json.Unmarshal(fileBytes, &articles)
-
-		if err != nil {
-			panic(err)
-		}
-
-		for _, article := range articles {
-			s.publish(article)
-		}
-
-		os.Remove("./newsarticles/*.json")
-
-		time.Sleep(time.Millisecond * 60000)
 	}
 }
 
-func (s *FileBasedSource) publish(article Article) {
-	s.News <- article
+func (s *FileBasedSource) GetArticles() []Article {
+
+	time.Sleep(time.Millisecond * 60000)
+
+	var articles []Article
+
+	fileBytes, err := ioutil.ReadFile(s.filePath)
+
+	if err != nil {
+		return articles
+	}
+
+	err = json.Unmarshal(fileBytes, &articles)
+
+	if err != nil {
+		return articles
+	}
+
+	os.Remove(s.filePath)
+
+	return articles
 }
 
 func (s *FileBasedSource) SourceStop() {

@@ -15,13 +15,14 @@ type NewsSourcer interface {
 
 type source struct {
 	Name       string   `json:"name"`
+	FilePath   string   `json:"filepath"`
 	Categories []string `json:"categories"`
 }
 
 type MockSource struct {
 	name       string
 	categories []string
-	News       chan Article
+	News       chan []Article
 	sync.RWMutex
 	Cancel   context.CancelFunc
 	closed   bool
@@ -30,8 +31,9 @@ type MockSource struct {
 
 type FileBasedSource struct {
 	name       string
+	filePath   string
 	categories []string
-	News       chan Article
+	News       chan []Article
 	sync.RWMutex
 	Cancel   context.CancelFunc
 	closed   bool

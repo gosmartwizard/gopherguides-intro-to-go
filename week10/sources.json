@@ -5,7 +5,8 @@
 		"categories" : ["Sports", "Tech", "Movies"]
 	 },
 	 {
-		"name" : "FileBasedSource", 
+		"name" : "FileBasedSource",
+		 
 		"categories" : ["Tech", "Movies", "Sports"]
 	 }	  
 ]

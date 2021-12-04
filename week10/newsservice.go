@@ -144,12 +144,12 @@ func (news *NewsService) StartSources() {
 
 			news.sources[source.Name] = newsource
 
-			go news.listen(newsource.News)
+			go news.listenForArticles(newsource.News)
 
 			go newsource.PublishArticles(ctx)
 
 		} else if source.Name == "FileBasedSource" {
-			newsource := NewFileBasedSource(source.Name)
+			newsource := NewFileBasedSource(source.Name, source.FilePath)
 
 			ctx, err := newsource.SourceStart(news.ctx, source.Categories...)
 
@@ -159,7 +159,7 @@ func (news *NewsService) StartSources() {
 
 			news.sources[source.Name] = newsource
 
-			go news.listen(newsource.News)
+			go news.listenForArticles(newsource.News)
 
 			go newsource.PublishArticles(ctx)
 		}
@@ -182,20 +182,23 @@ func (ns *NewsService) Start(ctx context.Context) {
 	ns.StartSources()
 }
 
-func (ns *NewsService) listen(news chan Article) {
+func (ns *NewsService) listenForArticles(news chan []Article) {
 
 	for {
 		select {
 		case <-ns.ctx.Done():
 			ns.Stop()
-		case article, ok := <-news:
+		case articles, ok := <-news:
 			if !ok {
 				continue
 			}
 
-			ns.publish(article)
+			for _, article := range articles {
+				ns.publish(article)
 
-			ns.saveArticleInMemory(article)
+				ns.saveArticleInMemory(article)
+			}
+
 		}
 	}
 }
