@@ -1,0 +1,11 @@
+
+[
+	{
+		"name" : "MockSource", 
+		"categories" : ["Sports", "Tech", "Movies"]
+	 },
+	 {
+		"name" : "FileBasedSource", 
+		"categories" : ["Tech", "Movies", "Sports"]
+	 }	  
+]
