@@ -25,7 +25,7 @@ func NewSubscriber(name string) *Subscriber {
 	return s
 }
 
-func (s *Subscriber) SubscriberStart(ctx context.Context, topics ...string) (context.Context, error) {
+func (s *Subscriber) SubscriberStart(ctx context.Context, topics ...string) context.Context {
 
 	ctx, cancel := context.WithCancel(ctx)
 
@@ -35,7 +35,7 @@ func (s *Subscriber) SubscriberStart(ctx context.Context, topics ...string) (con
 
 	copy(s.Topics, topics)
 
-	return ctx, nil
+	return ctx
 }
 
 func (s *Subscriber) Listen(ctx context.Context, ch chan Article) {

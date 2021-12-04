@@ -14,7 +14,7 @@ func NewMockSource(name string) *MockSource {
 	return s
 }
 
-func (s *MockSource) SourceStart(ctx context.Context, categories ...string) (context.Context, error) {
+func (s *MockSource) SourceStart(ctx context.Context, categories ...string) context.Context {
 
 	s.Lock()
 	defer s.Unlock()
@@ -27,7 +27,7 @@ func (s *MockSource) SourceStart(ctx context.Context, categories ...string) (con
 
 	copy(s.categories, categories)
 
-	return ctx, nil
+	return ctx
 }
 
 func (s *MockSource) PublishArticles(ctx context.Context) {

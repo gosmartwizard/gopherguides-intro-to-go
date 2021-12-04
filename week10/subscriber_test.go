@@ -12,11 +12,7 @@ func Test_Subscriber_GoldenPath(t *testing.T) {
 
 	s := NewSubscriber("Subscriber1")
 
-	ctx, err := s.SubscriberStart(ctx, "Sports")
-
-	if err != nil {
-		t.Fatalf(" Error : %#v", err)
-	}
+	ctx = s.SubscriberStart(ctx, "Sports")
 
 	ch := make(chan Article)
 
@@ -38,11 +34,7 @@ func Test_Subscriber_ChannelClose(t *testing.T) {
 
 	s := NewSubscriber("Subscriber2")
 
-	ctx, err := s.SubscriberStart(ctx, "Movies")
-
-	if err != nil {
-		t.Fatalf("Expected : nil, got : %#v", err)
-	}
+	ctx = s.SubscriberStart(ctx, "Movies")
 
 	ch := make(chan Article)
 
@@ -66,11 +58,7 @@ func Test_Subscriber_WrongCategory(t *testing.T) {
 
 	s := NewSubscriber("Subscriber3")
 
-	ctx, err := s.SubscriberStart(ctx, "Sports")
-
-	if err != nil {
-		t.Fatalf(" Error : %#v", err)
-	}
+	ctx = s.SubscriberStart(ctx, "Sports")
 
 	ch := make(chan Article)
 

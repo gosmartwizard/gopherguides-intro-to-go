@@ -19,7 +19,7 @@ func NewFileBasedSource(name string, filePath string) *FileBasedSource {
 	return s
 }
 
-func (s *FileBasedSource) SourceStart(ctx context.Context, categories ...string) (context.Context, error) {
+func (s *FileBasedSource) SourceStart(ctx context.Context, categories ...string) context.Context {
 
 	s.Lock()
 	defer s.Unlock()
@@ -32,7 +32,7 @@ func (s *FileBasedSource) SourceStart(ctx context.Context, categories ...string)
 
 	copy(s.categories, categories)
 
-	return ctx, nil
+	return ctx
 }
 
 func (s *FileBasedSource) PublishArticles(ctx context.Context) {

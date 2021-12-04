@@ -48,18 +48,18 @@ type Article struct {
 
 func GetSources() ([]source, error) {
 
+	var sources []source
+
 	fileBytes, err := ioutil.ReadFile("./sources.json")
 
 	if err != nil {
-		panic(err)
+		return sources, err
 	}
-
-	var sources []source
 
 	err = json.Unmarshal(fileBytes, &sources)
 
 	if err != nil {
-		panic(err)
+		return sources, err
 	}
 
 	return sources, nil

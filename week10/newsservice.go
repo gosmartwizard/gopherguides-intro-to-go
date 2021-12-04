@@ -3,7 +3,6 @@ package week10
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"sync"
 )
@@ -67,22 +66,18 @@ func NewNewService() *NewsService {
 	return ns
 }
 
-func (news *NewsService) StartSubscribers() {
+func (news *NewsService) StartSubscribers() error {
 
 	subscribers, err := GetSubscribers("./subscribers.json")
 
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	for _, subscriber := range subscribers {
 		newSubscriber := NewSubscriber(subscriber.Name)
 
-		ctx, err := newSubscriber.SubscriberStart(news.ctx, subscriber.Topics...)
-
-		if err != nil {
-			panic(err)
-		}
+		ctx := newSubscriber.SubscriberStart(news.ctx, subscriber.Topics...)
 
 		news.subscribers[subscriber.Name] = newSubscriber
 
@@ -95,54 +90,28 @@ func (news *NewsService) StartSubscribers() {
 
 		newSubscriber.Listen(ctx, ch)
 	}
+
+	return nil
 }
 
-func (news *NewsService) Subscribe(name string, topics ...string) {
-
-	news.Lock()
-	defer news.Unlock()
-
-	newSubscriber := NewSubscriber(name)
-
-	ctx, err := newSubscriber.SubscriberStart(news.ctx, topics...)
-
-	if err != nil {
-		panic(err)
-	}
-
-	news.subscribers[name] = newSubscriber
-
-	for _, topic := range topics {
-		news.categorySubscribers[topic] = append(news.categorySubscribers[topic], newSubscriber.Name)
-	}
-
-	ch := make(chan Article)
-	news.channelSubscriber[newSubscriber.Name] = ch
-
-	newSubscriber.Listen(ctx, ch)
-}
-
-func (news *NewsService) StartSources() {
+func (news *NewsService) StartSources() error {
 
 	sources, err := GetSources()
 
 	if err != nil {
-		panic(err)
+		return err
 	}
 
-	news.Lock()
 	for _, source := range sources {
 
 		if source.Name == "MockSource" {
 			newsource := NewMockSource(source.Name)
 
-			ctx, err := newsource.SourceStart(news.ctx, source.Categories...)
+			ctx := newsource.SourceStart(news.ctx, source.Categories...)
 
-			if err != nil {
-				panic(err)
-			}
-
+			news.Lock()
 			news.sources[source.Name] = newsource
+			news.Unlock()
 
 			go news.listenForArticles(newsource.News)
 
@@ -151,20 +120,19 @@ func (news *NewsService) StartSources() {
 		} else if source.Name == "FileBasedSource" {
 			newsource := NewFileBasedSource(source.Name, source.FilePath)
 
-			ctx, err := newsource.SourceStart(news.ctx, source.Categories...)
+			ctx := newsource.SourceStart(news.ctx, source.Categories...)
 
-			if err != nil {
-				panic(err)
-			}
-
+			news.Lock()
 			news.sources[source.Name] = newsource
+			news.Unlock()
 
 			go news.listenForArticles(newsource.News)
 
 			go newsource.PublishArticles(ctx)
 		}
 	}
-	news.Unlock()
+
+	return nil
 }
 
 func (ns *NewsService) Start(ctx context.Context) {
@@ -198,7 +166,6 @@ func (ns *NewsService) listenForArticles(news chan []Article) {
 
 				ns.saveArticleInMemory(article)
 			}
-
 		}
 	}
 }
@@ -243,6 +210,28 @@ func (ns *NewsService) saveArticleInMemory(article Article) {
 	ns.newsStats.articlesPerSource[article.Source] += 1
 }
 
+func (news *NewsService) Subscribe(name string, topics ...string) {
+
+	newSubscriber := NewSubscriber(name)
+
+	ctx := newSubscriber.SubscriberStart(news.ctx, topics...)
+
+	news.Lock()
+
+	news.subscribers[name] = newSubscriber
+
+	for _, topic := range topics {
+		news.categorySubscribers[topic] = append(news.categorySubscribers[topic], newSubscriber.Name)
+	}
+
+	ch := make(chan Article)
+	news.channelSubscriber[newSubscriber.Name] = ch
+
+	news.Unlock()
+
+	newSubscriber.Listen(ctx, ch)
+}
+
 func (ns *NewsService) UnSubscribe(name string) {
 
 	ns.Lock()
@@ -260,6 +249,45 @@ func (ns *NewsService) UnSubscribe(name string) {
 		subscriber.Cancel()
 		delete(ns.subscribers, name)
 	}
+}
+
+func (ns *NewsService) saveArticlesInBackupFile() error {
+
+	ns.RLock()
+	defer ns.RUnlock()
+
+	fileBytes, err := json.Marshal(ns.newsArticles.newsArticles)
+
+	if err != nil {
+		return err
+	}
+
+	ioutil.WriteFile(ns.newsStats.backupFileLocation, fileBytes, 0644)
+
+	return nil
+}
+
+func (ns *NewsService) LoadArticlesFromBackupFile() error {
+
+	fileBytes, err := ioutil.ReadFile(ns.newsStats.backupFileLocation)
+
+	if err != nil {
+		return err
+	}
+
+	var articles map[int]Article
+
+	err = json.Unmarshal(fileBytes, &articles)
+
+	if err != nil {
+		return err
+	}
+
+	for _, article := range articles {
+		ns.saveArticleInMemory(article)
+	}
+
+	return nil
 }
 
 func (ns *NewsService) Stop() {
@@ -304,7 +332,7 @@ func (ns *NewsService) Stop() {
 	})
 }
 
-func (ns *NewsService) NewsServiceStats() {
+/* func (ns *NewsService) NewsServiceStats() {
 
 	ns.RLock()
 	defer ns.RUnlock()
@@ -329,40 +357,4 @@ func (ns *NewsService) NewsServiceStats() {
 	fmt.Printf("TotalArticles : %#v \n", ns.newsStats.totalArticles)
 	fmt.Printf("Categories : %#v \n", ns.newsStats.categories)
 	fmt.Println()
-}
-
-func (ns *NewsService) saveArticlesInBackupFile() {
-
-	ns.RLock()
-	defer ns.RUnlock()
-
-	fileBytes, err := json.Marshal(ns.newsArticles.newsArticles)
-
-	if err != nil {
-		panic(err)
-	}
-
-	ioutil.WriteFile(ns.newsStats.backupFileLocation, fileBytes, 0644)
-
-}
-
-func (ns *NewsService) LoadArticlesFromBackupFile() {
-
-	fileBytes, err := ioutil.ReadFile(ns.newsStats.backupFileLocation)
-
-	if err != nil {
-		panic(err)
-	}
-
-	var articles map[int]Article
-
-	err = json.Unmarshal(fileBytes, &articles)
-
-	if err != nil {
-		panic(err)
-	}
-
-	for _, article := range articles {
-		ns.saveArticleInMemory(article)
-	}
-}
+} */

@@ -13,11 +13,7 @@ func Test_MockSource_Sports_Category(t *testing.T) {
 
 	mockSource := NewMockSource("MockSource_1")
 
-	ctx, err := mockSource.SourceStart(ctx, "Sports")
-
-	if err != nil {
-		t.Fatalf("Expected : nil, got : %#v", err)
-	}
+	ctx = mockSource.SourceStart(ctx, "Sports")
 
 	go mockSource.PublishArticles(ctx)
 
@@ -39,11 +35,7 @@ func Test_MockSource_Tech_Category(t *testing.T) {
 
 	mockSource := NewMockSource("MockSource_2")
 
-	ctx, err := mockSource.SourceStart(ctx, "Tech")
-
-	if err != nil {
-		t.Fatalf("Expected : nil, got : %#v", err)
-	}
+	ctx = mockSource.SourceStart(ctx, "Tech")
 
 	go mockSource.PublishArticles(ctx)
 
@@ -65,11 +57,7 @@ func Test_MockSource_Movies_Category(t *testing.T) {
 
 	mockSource := NewMockSource("MockSource_3")
 
-	ctx, err := mockSource.SourceStart(ctx, "Movies")
-
-	if err != nil {
-		t.Fatalf("Expected : nil, got : %#v", err)
-	}
+	ctx = mockSource.SourceStart(ctx, "Movies")
 
 	go mockSource.PublishArticles(ctx)
 
@@ -91,11 +79,7 @@ func Test_MockSource_Start_Stop(t *testing.T) {
 
 	mockSource := NewMockSource("MockSource_4")
 
-	_, err := mockSource.SourceStart(ctx, "Sports", "Tech", "Movies")
-
-	if err != nil {
-		t.Fatalf("Expected : nil, got : %#v", err)
-	}
+	mockSource.SourceStart(ctx, "Sports", "Tech", "Movies")
 
 	mockSource.SourceStop()
 
@@ -113,11 +97,7 @@ func Test_MockSource_MultipleCategory_WithTimeout(t *testing.T) {
 
 	mockSource := NewMockSource("MockSource_5")
 
-	_, err := mockSource.SourceStart(ctx, "Sports", "Tech", "Movies")
-
-	if err != nil {
-		t.Fatalf("Expected : nil, got : %#v", err)
-	}
+	mockSource.SourceStart(ctx, "Sports", "Tech", "Movies")
 
 	go mockSource.PublishArticles(ctx)
 

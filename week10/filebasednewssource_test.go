@@ -77,11 +77,7 @@ func Test_FileBasedSource_MultipleCategory(t *testing.T) {
 
 	fileBasedSource := NewFileBasedSource("FileBasedSource", "./testdata/newsarticles.json")
 
-	ctx, err := fileBasedSource.SourceStart(ctx, "Sports")
-
-	if err != nil {
-		t.Fatalf("Expected : nil, got : %#v", err)
-	}
+	ctx = fileBasedSource.SourceStart(ctx, "Sports")
 
 	go fileBasedSource.PublishArticles(ctx)
 
@@ -105,11 +101,7 @@ func Test_FileBasedSource_Sports_Category(t *testing.T) {
 
 	fileBasedSource := NewFileBasedSource("FileBasedSource", "./testdata/newsarticles.json")
 
-	ctx, err := fileBasedSource.SourceStart(ctx, "Tech")
-
-	if err != nil {
-		t.Fatalf("Expected : nil, got : %#v", err)
-	}
+	ctx = fileBasedSource.SourceStart(ctx, "Tech")
 
 	go fileBasedSource.PublishArticles(ctx)
 
@@ -131,11 +123,7 @@ func Test_FileBasedSource_Start_Stop(t *testing.T) {
 
 	fileBasedSource := NewFileBasedSource("FileBasedSource", "./testdata/newsarticles.json")
 
-	_, err := fileBasedSource.SourceStart(ctx, "Sports", "Tech", "Movies")
-
-	if err != nil {
-		t.Fatalf("Expected : nil, got : %#v", err)
-	}
+	fileBasedSource.SourceStart(ctx, "Sports", "Tech", "Movies")
 
 	fileBasedSource.SourceStop()
 
@@ -155,11 +143,7 @@ func Test_FileBasedSource_WithTimeOut(t *testing.T) {
 
 	fileBasedSource := NewFileBasedSource("FileBasedSource", "./testdata/newsarticles.json")
 
-	_, err := fileBasedSource.SourceStart(ctx, "Sports", "Tech", "Movies")
-
-	if err != nil {
-		t.Fatalf("Expected : nil, got : %#v", err)
-	}
+	fileBasedSource.SourceStart(ctx, "Sports", "Tech", "Movies")
 
 	go fileBasedSource.PublishArticles(ctx)
 
