@@ -1,4 +1,4 @@
-package week09
+package week10
 
 import (
 	"context"
@@ -40,18 +40,6 @@ func (s *MockSource) PublishArticles(ctx context.Context) {
 
 	s.RLock()
 	defer s.RUnlock()
-
-	/* for {
-
-		article := Article{}
-		article.source = "Mock_News_Source"
-		article.category = "Sports"
-		article.description = "Sachin Tendulkar"
-
-		s.publish(article)
-
-		time.Sleep(time.Millisecond * 5000)
-	} */
 
 	for {
 		if s.name == "MockSource" {
