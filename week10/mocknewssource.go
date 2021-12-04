@@ -2,6 +2,8 @@ package week10
 
 import (
 	"context"
+	"fmt"
+	"math/rand"
 	"time"
 )
 
@@ -21,7 +23,7 @@ func (s *MockSource) SourceStart(ctx context.Context, categories ...string) (con
 
 	ctx, cancel := context.WithCancel(ctx)
 
-	s.cancel = cancel
+	s.Cancel = cancel
 
 	s.categories = make([]string, len(categories))
 
@@ -32,31 +34,48 @@ func (s *MockSource) SourceStart(ctx context.Context, categories ...string) (con
 
 func (s *MockSource) PublishArticles(ctx context.Context) {
 
-	go func(ctx context.Context) {
-		<-ctx.Done()
-
-		s.SourceStop()
-	}(ctx)
-
-	s.RLock()
-	defer s.RUnlock()
-
 	for {
-		if s.name == "MockSource" {
-			article := Article{}
-			article.Source = "Mock_News_Source_1"
-			article.Category = "Sports"
-			article.Description = "Sachin Tendulkar"
-
-			s.publish(article)
+		select {
+		case <-ctx.Done():
+			fmt.Printf("Cancellation in source : %#v \n", s.name)
+			s.SourceStop()
+			return
+		case s.News <- s.getArticle():
+			fmt.Println("Article Published")
 		}
-
-		time.Sleep(time.Millisecond * 5000)
 	}
 }
 
-func (s *MockSource) publish(article Article) {
-	s.News <- article
+func (ms *MockSource) getArticle() Article {
+
+	//time.Sleep(time.Millisecond * 5000)
+
+	ms.RLock()
+
+	rand.Seed(time.Now().UnixNano())
+	min := 0
+	max := len(ms.categories) - 1
+	n := rand.Intn(max-min+1) + min
+
+	c := ms.categories[n]
+
+	article := Article{}
+	if c == "Sports" {
+		article.Source = "Mock_News_Source"
+		article.Category = "Sports"
+		article.Description = "Sachin Tendulkar"
+	} else if c == "Tech" {
+		article.Source = "Mock_News_Source"
+		article.Category = "Tech"
+		article.Description = "GoLang"
+	} else if c == "Movies" {
+		article.Source = "Mock_News_Source"
+		article.Category = "Movies"
+		article.Description = "Avengers"
+	}
+	ms.RUnlock()
+
+	return article
 }
 
 func (s *MockSource) SourceStop() {
@@ -72,7 +91,7 @@ func (s *MockSource) SourceStop() {
 		s.Lock()
 		defer s.Unlock()
 
-		s.cancel()
+		s.Cancel()
 
 		s.closed = true
 

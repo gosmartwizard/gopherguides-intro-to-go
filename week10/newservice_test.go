@@ -27,9 +27,10 @@ package week10
 	time.Sleep(time.Millisecond * 5000)
 
 	//ns.NewsServiceStats()
-	ns.saveArticlesInBackupFile()
+	//ns.saveArticlesInBackupFile()
 
-	ns.LoadArticlesFromBackupFile()
+	//ns.LoadArticlesFromBackupFile()
 
 	<-ns.ctx.Done()
-} */
+}
+*/

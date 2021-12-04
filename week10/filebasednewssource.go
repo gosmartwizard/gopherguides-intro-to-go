@@ -24,7 +24,7 @@ func (s *FileBasedSource) SourceStart(ctx context.Context, categories ...string)
 
 	ctx, cancel := context.WithCancel(ctx)
 
-	s.cancel = cancel
+	s.Cancel = cancel
 
 	s.categories = make([]string, len(categories))
 
@@ -87,7 +87,7 @@ func (s *FileBasedSource) SourceStop() {
 		s.Lock()
 		defer s.Unlock()
 
-		s.cancel()
+		s.Cancel()
 
 		s.closed = true
 

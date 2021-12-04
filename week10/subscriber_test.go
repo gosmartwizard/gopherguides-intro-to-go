@@ -41,7 +41,7 @@ func Test_Subscriber_ChannelClose(t *testing.T) {
 	ctx, err := s.SubscriberStart(ctx, "Movies")
 
 	if err != nil {
-		t.Fatalf(" Error : %#v", err)
+		t.Fatalf("Expected : nil, got : %#v", err)
 	}
 
 	ch := make(chan Article)
