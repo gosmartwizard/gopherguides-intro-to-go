@@ -1,10 +1,14 @@
 package week10
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
+	"strconv"
 	"sync"
+	"time"
 )
 
 type Configuration struct {
@@ -84,6 +88,8 @@ func (ns *NewsService) Start(ctx context.Context) {
 	ns.readConfiguration()
 
 	ns.LoadArticlesFromBackupFile()
+
+	go ns.saveArtilces()
 }
 
 func (ns *NewsService) listenForArticles(news chan []Article) {
@@ -233,6 +239,13 @@ func (ns *NewsService) UnSubscribe(name string) {
 	}
 }
 
+func (ns *NewsService) saveArtilces() {
+	for {
+		time.Sleep(time.Second * time.Duration(ns.config.SaveStateInterval))
+		ns.saveArticlesInBackupFile()
+	}
+}
+
 func (ns *NewsService) saveArticlesInBackupFile() error {
 
 	ns.RLock()
@@ -339,29 +352,164 @@ func (ns *NewsService) Stop() {
 	})
 }
 
-/* func (ns *NewsService) NewsServiceStats() {
+func (ns *NewsService) GetArticlesByIds(backupFile string, articleIds []string) ([]Article, error) {
 
-	ns.RLock()
-	defer ns.RUnlock()
+	articles := []Article{}
 
-	fmt.Println("NewsArticles")
-	for index, article := range ns.newsArticles.newsArticles {
-		fmt.Printf("Index : %#v, Article : %#v \n", index, article)
-	}
+	if ns != nil {
+		ns.RLock()
+		for _, id := range articleIds {
 
-	fmt.Println()
+			id, err := strconv.Atoi(id)
 
-	fmt.Println("CategoryArticles")
-	for name, category := range ns.categoryArticles.categoryArticles {
-		for index, article := range category {
-			fmt.Printf("Category : %#v, Index : %#v, Article : %#v \n", name, index, article)
+			if err != nil {
+				return articles, err
+			}
+
+			article, ok := ns.newsArticles.newsArticles[id]
+
+			if !ok {
+				continue
+			}
+
+			articles = append(articles, article)
+		}
+		ns.RUnlock()
+
+		if len(articleIds) == len(articles) {
+			return articles, nil
 		}
 	}
 
-	fmt.Println("NewsStats")
-	fmt.Printf("ArticlesPerCategory : %#v \n", ns.newsStats.articlesPerCategory)
-	fmt.Printf("ArticlesPerSource : %#v \n", ns.newsStats.articlesPerSource)
-	fmt.Printf("TotalArticles : %#v \n", ns.newsStats.totalArticles)
-	fmt.Printf("Categories : %#v \n", ns.newsStats.categories)
-	fmt.Println()
-} */
+	articles = []Article{}
+
+	fileBytes, err := ioutil.ReadFile(backupFile)
+
+	if err != nil {
+		return articles, err
+	}
+
+	var idArticles map[int]Article
+
+	err = json.Unmarshal(fileBytes, &idArticles)
+
+	if err != nil {
+		return articles, err
+	}
+
+	for _, id := range articleIds {
+
+		id, _ := strconv.Atoi(id)
+
+		article, ok := idArticles[id]
+
+		if !ok {
+			return articles, fmt.Errorf("article id : %#v doesn't exist", id)
+		}
+
+		articles = append(articles, article)
+	}
+
+	return articles, nil
+}
+
+func (ns *NewsService) GetStreamByCategory(backupFile string, categories []string) ([]Article, error) {
+
+	articles := []Article{}
+	ns.RLock()
+	for _, category := range categories {
+		newsArticles, ok := ns.categoryArticles.categoryArticles[category]
+		if ok {
+			for _, article := range newsArticles {
+				articles = append(articles, article)
+			}
+		}
+	}
+	ns.RUnlock()
+
+	if len(articles) != 0 {
+		return articles, nil
+	}
+
+	articles = []Article{}
+
+	fileBytes, err := ioutil.ReadFile(backupFile)
+
+	if err != nil {
+		return articles, err
+	}
+
+	var idArticles map[int]Article
+
+	err = json.Unmarshal(fileBytes, &idArticles)
+
+	if err != nil {
+		return articles, err
+	}
+
+	for _, article := range idArticles {
+
+		for _, category := range categories {
+			if article.Category == category {
+				articles = append(articles, article)
+				break
+			}
+		}
+	}
+
+	return articles, nil
+}
+
+func (ns *NewsService) NewsServiceStats(backupFile string) (string, error) {
+
+	bb := &bytes.Buffer{}
+
+	fileBytes, err := ioutil.ReadFile(backupFile)
+
+	if err != nil {
+		return bb.String(), err
+	}
+
+	var idArticles map[int]Article
+
+	err = json.Unmarshal(fileBytes, &idArticles)
+
+	if err != nil {
+		return bb.String(), err
+	}
+
+	articlesPerCategory := make(map[string]int)
+	articlesPerSource := make(map[string]int)
+
+	articlesCount := len(idArticles)
+
+	for _, article := range idArticles {
+		articlesPerCategory[article.Category] += 1
+		articlesPerSource[article.Source] += 1
+	}
+
+	fmt.Fprintf(bb, "List of categories in the Backup file are as follows\n")
+	for category := range articlesPerCategory {
+		fmt.Fprintf(bb, "%v, ", category)
+	}
+	fmt.Fprintln(bb)
+
+	fmt.Fprintf(bb, "Location of the backup file : %v\n", backupFile)
+	fmt.Fprintf(bb, "Number of articles in the backup file : %v\n", articlesCount)
+
+	fmt.Fprintf(bb, "Number of articles per Category are as follows \n")
+	for category, count := range articlesPerCategory {
+		fmt.Fprintf(bb, " %v : %v  \n", category, count)
+	}
+
+	fmt.Fprintln(bb)
+
+	fmt.Fprintf(bb, "Number of articles per Source are as follows\n")
+	for source, count := range articlesPerSource {
+		fmt.Fprintf(bb, " %v : %v  \n", source, count)
+	}
+
+	fmt.Fprintln(bb)
+
+	return bb.String(), nil
+}

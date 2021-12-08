@@ -6,7 +6,6 @@ import (
 
 //var _ IOCommander = &ListCmd{}
 
-// snippet: type
 type ReadCmd struct {
 	//IO
 	Name string
