@@ -4,9 +4,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"os"
-	"syscall"
 	"testing"
-	"time"
 )
 
 func generateBackupData(filePath string) error {
@@ -155,8 +153,12 @@ func Test_Cli_Read_Empty(t *testing.T) {
 	}
 }
 
-func Test_Cli_Stream(t *testing.T) {
+/* func Test_Cli_Stream(t *testing.T) {
 	t.Parallel()
+
+	if runtime.GOOS == "windows" {
+		t.Skip()
+	}
 
 	filePath := "/tmp/newsarticles5.json"
 
@@ -183,9 +185,12 @@ func Test_Cli_Stream(t *testing.T) {
 	}
 }
 
-/*
 func Test_Cli_Stream_F_Flag(t *testing.T) {
 	t.Parallel()
+
+	if runtime.GOOS == "windows" {
+		t.Skip()
+	}
 
 	filePath := "/tmp/newsarticles6.json"
 
@@ -215,6 +220,10 @@ func Test_Cli_Stream_F_Flag(t *testing.T) {
 func Test_Cli_Stream_J_Flag(t *testing.T) {
 	t.Parallel()
 
+	if runtime.GOOS == "windows" {
+		t.Skip()
+	}
+
 	filePath := "/tmp/newsarticles7.json"
 
 	generateBackupData(filePath)
@@ -241,9 +250,12 @@ func Test_Cli_Stream_J_Flag(t *testing.T) {
 	}
 }
 
-
 func Test_Cli_Stream_O_Flag(t *testing.T) {
 	t.Parallel()
+
+	if runtime.GOOS == "windows" {
+		t.Skip()
+	}
 
 	filePath := "/tmp/newsarticles8.json"
 
