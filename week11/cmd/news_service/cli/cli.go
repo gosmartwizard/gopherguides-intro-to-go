@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"io"
 	"os"
-	//"github.com/gosmartwizard/gopherguides-intro-to-go/week11/pkg"
 )
 
 type App struct {

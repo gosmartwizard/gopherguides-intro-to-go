@@ -1,22 +1,14 @@
-package week10
+package week11
 
 import (
 	"context"
-	"encoding/json"
-	"io/ioutil"
 	"sync"
 )
 
 type NewsSourcer interface {
-	SourceStart(ctx context.Context, categories ...string)
+	SourceStart(categories ...string)
 	PublishArticles(ctx context.Context)
 	SourceStop()
-}
-
-type source struct {
-	Name       string   `json:"name"`
-	FilePath   string   `json:"filepath"`
-	Categories []string `json:"categories"`
 }
 
 type MockSource struct {
@@ -27,7 +19,6 @@ type MockSource struct {
 	Cancel             context.CancelFunc
 	closed             bool
 	stopOnce           sync.Once
-	ctx                context.Context
 	mockSourceInterval int
 }
 
@@ -40,7 +31,6 @@ type FileBasedSource struct {
 	Cancel            context.CancelFunc
 	closed            bool
 	stopOnce          sync.Once
-	ctx               context.Context
 	fileBasedInterval int
 }
 
@@ -48,23 +38,4 @@ type Article struct {
 	Source      string
 	Category    string
 	Description string
-}
-
-func GetSources() ([]source, error) {
-
-	var sources []source
-
-	fileBytes, err := ioutil.ReadFile("./sources.json")
-
-	if err != nil {
-		return sources, err
-	}
-
-	err = json.Unmarshal(fileBytes, &sources)
-
-	if err != nil {
-		return sources, err
-	}
-
-	return sources, nil
 }

@@ -1,11 +1,13 @@
-package week10
+package week11
 
 import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
+	"os"
 	"strconv"
 	"sync"
 	"time"
@@ -14,15 +16,15 @@ import (
 type Configuration struct {
 	SaveStateInterval  int `json:"saveStateInterval"`
 	MockSourceInterval int `json:"mockSourceInterval"`
-	FileBasedInterval  int `json:"FileBasedInterval"`
+	FileBasedInterval  int `json:"fileBasedInterval"`
 }
 
 type NewsService struct {
 	sync.RWMutex
 	ctx                 context.Context
-	sources             map[string]interface{}
+	sources             map[string]context.CancelFunc
 	subscribers         map[string]*Subscriber
-	channelSubscriber   map[string]chan Article
+	subscriberChannel   map[string]chan Article
 	categorySubscribers map[string][]string
 	newsArticles        *NewsArticles
 	categoryArticles    *CategoryArticles
@@ -49,15 +51,17 @@ type NewsStats struct {
 	articlesPerSource   map[string]int
 }
 
+const configFilePath = "./config/configuration.json"
+
 func NewNewService() *NewsService {
 	ns := &NewsService{}
 
 	ns.closed = false
 
-	ns.subscribers = make(map[string]*Subscriber)
-	ns.channelSubscriber = make(map[string]chan Article)
+	ns.sources = make(map[string]context.CancelFunc)
 
-	ns.sources = make(map[string]interface{})
+	ns.subscribers = make(map[string]*Subscriber)
+	ns.subscriberChannel = make(map[string]chan Article)
 
 	ns.categorySubscribers = make(map[string][]string)
 
@@ -70,14 +74,17 @@ func NewNewService() *NewsService {
 	ns.categoryArticles.categoryArticles = make(map[string]map[int]Article)
 
 	ns.newsStats = &NewsStats{}
-	ns.newsStats.backupFileLocation = "./newServiceBackupFile.json"
+	ns.newsStats.totalArticles = 0
+	ns.newsStats.backupFileLocation = "/tmp/NewsServiceBackup.json"
 	ns.newsStats.articlesPerCategory = make(map[string]int)
 	ns.newsStats.articlesPerSource = make(map[string]int)
 
 	return ns
 }
 
-func (ns *NewsService) Start(ctx context.Context) {
+func (ns *NewsService) Start() error {
+
+	ctx := context.Background()
 
 	ctx, cancel := context.WithCancel(ctx)
 
@@ -85,11 +92,17 @@ func (ns *NewsService) Start(ctx context.Context) {
 
 	ns.ctx = ctx
 
-	ns.readConfiguration()
+	err := ns.readConfiguration()
+
+	if err != nil {
+		return err
+	}
 
 	ns.LoadArticlesFromBackupFile()
 
-	go ns.saveArtilces()
+	go ns.SaveArtilces()
+
+	return nil
 }
 
 func (ns *NewsService) listenForArticles(news chan []Article) {
@@ -97,14 +110,14 @@ func (ns *NewsService) listenForArticles(news chan []Article) {
 	for {
 		select {
 		case <-ns.ctx.Done():
-			ns.Stop()
+			return
 		case articles, ok := <-news:
 			if !ok {
-				continue
+				return
 			}
 
 			for _, article := range articles {
-				ns.publish(article)
+				go ns.publish(article)
 
 				ns.saveArticleInMemory(article)
 			}
@@ -114,15 +127,15 @@ func (ns *NewsService) listenForArticles(news chan []Article) {
 
 func (ns *NewsService) publish(article Article) {
 
-	ns.Lock()
-	defer ns.Unlock()
+	ns.RLock()
+	defer ns.RUnlock()
 
 	topic := article.Category
 
 	ss := ns.categorySubscribers[topic]
 
 	for _, s := range ss {
-		ns.channelSubscriber[s] <- article
+		ns.subscriberChannel[s] <- article
 	}
 }
 
@@ -152,50 +165,56 @@ func (ns *NewsService) saveArticleInMemory(article Article) {
 	ns.newsStats.articlesPerSource[article.Source] += 1
 }
 
-func (ns *NewsService) Register(name string, categories ...string) {
+func (ns *NewsService) MockRegistration(name string, categories ...string) {
 
-	if name == "MockSource" {
-		mocksource := NewMockSource(name)
+	mocksource := NewMockSource(name, ns.config.MockSourceInterval)
 
-		mocksource.SourceStart(ns.config.MockSourceInterval, categories...)
+	mocksource.SourceStart(categories...)
 
-		ns.Lock()
-		ns.sources[name] = mocksource
-		ns.Unlock()
+	ctx := context.Background()
 
-		go ns.listenForArticles(mocksource.News)
+	ctx, cancel := context.WithCancel(ctx)
 
-		go mocksource.PublishArticles()
+	ns.Lock()
+	ns.sources[name] = cancel
+	ns.Unlock()
 
-	} else if name == "FileBasedSource" {
-		fileBasedSource := NewFileBasedSource(name)
+	go ns.listenForArticles(mocksource.News)
 
-		fileBasedSource.SourceStart(ns.config.FileBasedInterval, categories...)
-
-		ns.Lock()
-		ns.sources[name] = fileBasedSource
-		ns.Unlock()
-
-		go ns.listenForArticles(fileBasedSource.News)
-
-		go fileBasedSource.PublishArticles()
-	}
+	go mocksource.PublishArticles(ctx)
 
 }
+
+func (ns *NewsService) FileBasedRegistration(name string, filePath string, categories ...string) {
+
+	fileBasedSource := NewFileBasedSource(name, filePath, ns.config.FileBasedInterval)
+
+	ch := fileBasedSource.SourceStart(categories...)
+
+	ctx := context.Background()
+
+	ctx, cancel := context.WithCancel(ctx)
+
+	ns.Lock()
+	ns.sources[name] = cancel
+	ns.Unlock()
+
+	go ns.listenForArticles(ch)
+
+	go fileBasedSource.PublishArticles(ctx)
+
+}
+
 func (ns *NewsService) UnRegister(name string) {
 
 	ns.Lock()
 	defer ns.Unlock()
 
-	source := ns.sources[name]
-
-	if s, ok := source.(MockSource); ok {
-		s.SourceStop()
-	} else if s, ok := source.(FileBasedSource); ok {
-		s.SourceStop()
+	cancel, ok := ns.sources[name]
+	if ok {
+		cancel()
+		delete(ns.sources, name)
 	}
-
-	delete(ns.sources, name)
 }
 
 func (news *NewsService) Subscribe(name string, topics ...string) {
@@ -213,7 +232,7 @@ func (news *NewsService) Subscribe(name string, topics ...string) {
 	}
 
 	ch := make(chan Article)
-	news.channelSubscriber[newSubscriber.Name] = ch
+	news.subscriberChannel[newSubscriber.Name] = ch
 
 	news.Unlock()
 
@@ -228,18 +247,18 @@ func (ns *NewsService) UnSubscribe(name string) {
 	subscriber, ok := ns.subscribers[name]
 
 	if ok {
-		ch := ns.channelSubscriber[subscriber.Name]
+		ch := ns.subscriberChannel[subscriber.Name]
 		if ch != nil {
 			close(ch)
 		}
-		delete(ns.channelSubscriber, name)
+		delete(ns.subscriberChannel, name)
 
 		subscriber.Cancel()
 		delete(ns.subscribers, name)
 	}
 }
 
-func (ns *NewsService) saveArtilces() {
+func (ns *NewsService) SaveArtilces() {
 	for {
 		time.Sleep(time.Second * time.Duration(ns.config.SaveStateInterval))
 		ns.saveArticlesInBackupFile()
@@ -251,19 +270,25 @@ func (ns *NewsService) saveArticlesInBackupFile() error {
 	ns.RLock()
 	defer ns.RUnlock()
 
-	fileBytes, err := json.Marshal(ns.newsArticles.newsArticles)
+	if len(ns.newsArticles.newsArticles) == 0 {
+		return nil
+	}
+
+	bytes, err := json.Marshal(ns.newsArticles.newsArticles)
 
 	if err != nil {
 		return err
 	}
 
-	ioutil.WriteFile(ns.newsStats.backupFileLocation, fileBytes, 0644)
+	file, err := os.Create(ns.newsStats.backupFileLocation)
 
 	if err != nil {
 		return err
 	}
 
-	return nil
+	_, err = file.Write(bytes)
+
+	return err
 }
 
 func (ns *NewsService) LoadArticlesFromBackupFile() error {
@@ -291,7 +316,12 @@ func (ns *NewsService) LoadArticlesFromBackupFile() error {
 
 func (ns *NewsService) readConfiguration() error {
 
-	fileBytes, err := ioutil.ReadFile("./config/configuration.json")
+	_, err := os.Open(configFilePath)
+	if errors.Is(err, os.ErrNotExist) {
+		return errors.New("config file doesn't exists")
+	}
+
+	fileBytes, err := ioutil.ReadFile(configFilePath)
 
 	if err != nil {
 		return err
@@ -326,23 +356,22 @@ func (ns *NewsService) Stop() {
 		ns.Lock()
 		defer ns.Unlock()
 
-		ns.cancel()
+		if ns.cancel != nil {
+			ns.cancel()
+		}
 
 		ns.closed = true
 
-		for _, source := range ns.sources {
-			if s, ok := source.(MockSource); ok {
-				s.SourceStop()
-			} else if s, ok := source.(FileBasedSource); ok {
-				s.SourceStop()
-			}
+		for name, cancel := range ns.sources {
+			cancel()
+			delete(ns.sources, name)
 		}
 
-		for name, ch := range ns.channelSubscriber {
+		for name, ch := range ns.subscriberChannel {
 			if ch != nil {
 				close(ch)
 			}
-			delete(ns.channelSubscriber, name)
+			delete(ns.subscriberChannel, name)
 		}
 
 		for name, s := range ns.subscribers {
@@ -352,9 +381,9 @@ func (ns *NewsService) Stop() {
 	})
 }
 
-func (ns *NewsService) GetArticlesByIds(backupFile string, articleIds []string) ([]Article, error) {
+func (ns *NewsService) GetArticlesByIds(backupFile string, articleIds []string) (map[int]Article, error) {
 
-	articles := []Article{}
+	articles := make(map[int]Article)
 
 	if ns != nil {
 		ns.RLock()
@@ -372,7 +401,7 @@ func (ns *NewsService) GetArticlesByIds(backupFile string, articleIds []string) 
 				continue
 			}
 
-			articles = append(articles, article)
+			articles[id] = article
 		}
 		ns.RUnlock()
 
@@ -381,7 +410,10 @@ func (ns *NewsService) GetArticlesByIds(backupFile string, articleIds []string) 
 		}
 	}
 
-	articles = []Article{}
+	_, err := os.Open(backupFile)
+	if errors.Is(err, os.ErrNotExist) {
+		return articles, errors.New("BackupFile not exists")
+	}
 
 	fileBytes, err := ioutil.ReadFile(backupFile)
 
@@ -407,21 +439,21 @@ func (ns *NewsService) GetArticlesByIds(backupFile string, articleIds []string) 
 			return articles, fmt.Errorf("article id : %#v doesn't exist", id)
 		}
 
-		articles = append(articles, article)
+		articles[id] = article
 	}
 
 	return articles, nil
 }
 
-func (ns *NewsService) GetStreamByCategory(backupFile string, categories []string) ([]Article, error) {
+func (ns *NewsService) GetStreamByCategory(backupFile string, categories []string) (map[int]Article, error) {
 
-	articles := []Article{}
+	articles := make(map[int]Article)
 	ns.RLock()
 	for _, category := range categories {
 		newsArticles, ok := ns.categoryArticles.categoryArticles[category]
 		if ok {
-			for _, article := range newsArticles {
-				articles = append(articles, article)
+			for id, article := range newsArticles {
+				articles[id] = article
 			}
 		}
 	}
@@ -431,7 +463,10 @@ func (ns *NewsService) GetStreamByCategory(backupFile string, categories []strin
 		return articles, nil
 	}
 
-	articles = []Article{}
+	_, err := os.Open(backupFile)
+	if errors.Is(err, os.ErrNotExist) {
+		return articles, errors.New("BackupFile not exists")
+	}
 
 	fileBytes, err := ioutil.ReadFile(backupFile)
 
@@ -447,11 +482,11 @@ func (ns *NewsService) GetStreamByCategory(backupFile string, categories []strin
 		return articles, err
 	}
 
-	for _, article := range idArticles {
+	for id, article := range idArticles {
 
 		for _, category := range categories {
 			if article.Category == category {
-				articles = append(articles, article)
+				articles[id] = article
 				break
 			}
 		}
@@ -460,7 +495,12 @@ func (ns *NewsService) GetStreamByCategory(backupFile string, categories []strin
 	return articles, nil
 }
 
-func (ns *NewsService) NewsServiceStats(backupFile string) (string, error) {
+func (ns *NewsService) GetNewsServiceStats(backupFile string) (string, error) {
+
+	_, err := os.Open(backupFile)
+	if errors.Is(err, os.ErrNotExist) {
+		return "", errors.New("BackupFile not exists")
+	}
 
 	bb := &bytes.Buffer{}
 
@@ -490,13 +530,17 @@ func (ns *NewsService) NewsServiceStats(backupFile string) (string, error) {
 
 	fmt.Fprintf(bb, "List of categories in the Backup file are as follows\n")
 	for category := range articlesPerCategory {
-		fmt.Fprintf(bb, "%v, ", category)
+		fmt.Fprintf(bb, "\t %v ", category)
 	}
 	fmt.Fprintln(bb)
 
+	fmt.Fprintln(bb)
 	fmt.Fprintf(bb, "Location of the backup file : %v\n", backupFile)
+
+	fmt.Fprintln(bb)
 	fmt.Fprintf(bb, "Number of articles in the backup file : %v\n", articlesCount)
 
+	fmt.Fprintln(bb)
 	fmt.Fprintf(bb, "Number of articles per Category are as follows \n")
 	for category, count := range articlesPerCategory {
 		fmt.Fprintf(bb, " %v : %v  \n", category, count)
@@ -512,4 +556,20 @@ func (ns *NewsService) NewsServiceStats(backupFile string) (string, error) {
 	fmt.Fprintln(bb)
 
 	return bb.String(), nil
+}
+
+func (ns *NewsService) Clear(backupFile string) error {
+
+	_, err := os.Open(backupFile)
+	if errors.Is(err, os.ErrNotExist) {
+		return errors.New("BackupFile not exists")
+	}
+
+	err = os.Remove(backupFile)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

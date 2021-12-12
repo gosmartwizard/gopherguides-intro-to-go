@@ -1,4 +1,4 @@
-package week10
+package week11
 
 import (
 	"context"
@@ -9,9 +9,10 @@ import (
 	"time"
 )
 
-func generateMultipleCategoryData(filePath string) error {
+func generateFileBasedMultipleCategoryData(filePath string) error {
 
 	var articles []Article
+
 	article := Article{}
 
 	article.Source = "FileBasedSource"
@@ -45,9 +46,10 @@ func generateMultipleCategoryData(filePath string) error {
 	return nil
 }
 
-func generateSingleCategoryData(filePath string) error {
+func generateFileBasedSingleCategoryData(filePath string) error {
 
 	var articles []Article
+
 	article := Article{}
 
 	article.Source = "FileBasedSource"
@@ -68,78 +70,101 @@ func generateSingleCategoryData(filePath string) error {
 
 	return nil
 }
+
 func Test_FileBasedSource_MultipleCategory(t *testing.T) {
 	t.Parallel()
 
-	generateMultipleCategoryData("./newsarticles/newsarticles.json")
+	ctx := context.Background()
 
-	fileBasedSource := NewFileBasedSource("FileBasedSource")
+	ctx, cancel := context.WithCancel(ctx)
 
-	fileBasedSource.SourceStart(10, "Sports")
+	filePath := "./testdata/filebased/newsarticles1.json"
 
-	go fileBasedSource.PublishArticles()
+	generateFileBasedMultipleCategoryData(filePath)
+
+	fileBasedSource := NewFileBasedSource("FileBasedSource", filePath, 10)
+
+	fileBasedSource.SourceStart("Sports", "Tech", "Movies")
+
+	go fileBasedSource.PublishArticles(ctx)
 
 	select {
-	case <-fileBasedSource.ctx.Done():
+	case <-ctx.Done():
 	case _, ok := <-fileBasedSource.News:
 		if !ok {
 			t.Fatalf("Expected : Open Channel, got : closed Channel")
 		}
 	}
 
-	fileBasedSource.Cancel()
+	cancel()
 }
 
 func Test_FileBasedSource_Sports_Category(t *testing.T) {
 	t.Parallel()
 
-	generateSingleCategoryData("./newsarticles/newsarticles.json")
+	ctx := context.Background()
 
-	fileBasedSource := NewFileBasedSource("FileBasedSource")
+	ctx, cancel := context.WithCancel(ctx)
 
-	fileBasedSource.SourceStart(10, "Tech")
+	filePath := "./testdata/filebased/newsarticles2.json"
 
-	go fileBasedSource.PublishArticles()
+	generateFileBasedSingleCategoryData(filePath)
+
+	fileBasedSource := NewFileBasedSource("FileBasedSource", filePath, 10)
+
+	fileBasedSource.SourceStart("Sports")
+
+	go fileBasedSource.PublishArticles(ctx)
 
 	select {
-	case <-fileBasedSource.ctx.Done():
+	case <-ctx.Done():
 	case _, ok := <-fileBasedSource.News:
 		if !ok {
 			t.Fatalf("Expected : Open Channel, got : closed Channel")
 		}
 	}
 
-	fileBasedSource.Cancel()
+	cancel()
 }
 
 func Test_FileBasedSource_Start_Stop(t *testing.T) {
 	t.Parallel()
 
-	fileBasedSource := NewFileBasedSource("FileBasedSource")
+	ctx := context.Background()
 
-	fileBasedSource.SourceStart(10, "Sports", "Tech", "Movies")
+	_, cancel := context.WithCancel(ctx)
+
+	filePath := "./testdata/filebased/newsarticles3.json"
+
+	fileBasedSource := NewFileBasedSource("FileBasedSource", filePath, 10)
+
+	fileBasedSource.SourceStart("Sports", "Tech", "Movies")
 
 	fileBasedSource.SourceStop()
 
 	fileBasedSource.SourceStop()
+
+	cancel()
 }
 
 func Test_FileBasedSource_WithTimeOut(t *testing.T) {
 	t.Parallel()
 
-	generateMultipleCategoryData("./testdata/newsarticles.json")
+	filePath := "./testdata/filebased/newsarticles4.json"
+
+	generateFileBasedMultipleCategoryData(filePath)
 
 	rootCtx := context.Background()
 
-	ctx, cancel := context.WithTimeout(rootCtx, 30*time.Second)
+	ctx, cancel := context.WithTimeout(rootCtx, 20*time.Second)
 
 	defer cancel()
 
-	fileBasedSource := NewFileBasedSource("FileBasedSource")
+	fileBasedSource := NewFileBasedSource("FileBasedSource", filePath, 10)
 
-	fileBasedSource.SourceStart(10, "Sports", "Tech", "Movies")
+	fileBasedSource.SourceStart("Sports", "Tech", "Movies")
 
-	go fileBasedSource.PublishArticles()
+	go fileBasedSource.PublishArticles(ctx)
 
 	select {
 	case <-rootCtx.Done():

@@ -1,4 +1,4 @@
-package week10
+package week11
 
 import (
 	"context"
@@ -9,69 +9,129 @@ import (
 func Test_MockSource_Sports_Category(t *testing.T) {
 	t.Parallel()
 
-	mockSource := NewMockSource("MockSource_1")
+	ctx := context.Background()
 
-	mockSource.SourceStart(10, "Sports")
+	ctx, cancel := context.WithCancel(ctx)
 
-	go mockSource.PublishArticles()
+	mockSource := NewMockSource("MockSource", 10)
+
+	mockSource.SourceStart("Sports")
+
+	go mockSource.PublishArticles(ctx)
 
 	select {
-	case <-mockSource.ctx.Done():
+	case <-ctx.Done():
 	case _, ok := <-mockSource.News:
 		if !ok {
 			t.Fatalf("Expected : Open Channel, got : closed Channel")
 		}
 	}
 
-	mockSource.Cancel()
+	cancel()
 }
 
 func Test_MockSource_Tech_Category(t *testing.T) {
 	t.Parallel()
 
-	mockSource := NewMockSource("MockSource_2")
+	ctx := context.Background()
 
-	mockSource.SourceStart(10, "Tech")
+	ctx, cancel := context.WithCancel(ctx)
 
-	go mockSource.PublishArticles()
+	mockSource := NewMockSource("MockSource", 10)
+
+	mockSource.SourceStart("Tech")
+
+	go mockSource.PublishArticles(ctx)
 
 	select {
-	case <-mockSource.ctx.Done():
+	case <-ctx.Done():
 	case _, ok := <-mockSource.News:
 		if !ok {
 			t.Fatalf("Expected : Open Channel, got : closed Channel")
 		}
 	}
 
-	mockSource.Cancel()
+	cancel()
 }
 
 func Test_MockSource_Movies_Category(t *testing.T) {
 	t.Parallel()
 
-	mockSource := NewMockSource("MockSource_3")
+	ctx := context.Background()
 
-	mockSource.SourceStart(10, "Movies")
+	ctx, cancel := context.WithCancel(ctx)
 
-	go mockSource.PublishArticles()
+	mockSource := NewMockSource("MockSource", 10)
+
+	mockSource.SourceStart("Movies")
+
+	go mockSource.PublishArticles(ctx)
 
 	select {
-	case <-mockSource.ctx.Done():
+	case <-ctx.Done():
 	case _, ok := <-mockSource.News:
 		if !ok {
 			t.Fatalf("Expected : Open Channel, got : closed Channel")
 		}
 	}
 
-	mockSource.Cancel()
+	cancel()
+}
+
+func Test_MockSource_Politics_Category(t *testing.T) {
+	t.Parallel()
+
+	ctx := context.Background()
+
+	ctx, cancel := context.WithCancel(ctx)
+
+	mockSource := NewMockSource("MockSource", 10)
+
+	mockSource.SourceStart("Politics")
+
+	go mockSource.PublishArticles(ctx)
+
+	select {
+	case <-ctx.Done():
+	case _, ok := <-mockSource.News:
+		if !ok {
+			t.Fatalf("Expected : Open Channel, got : closed Channel")
+		}
+	}
+
+	cancel()
+}
+
+func Test_MockSource_Music_Category(t *testing.T) {
+	t.Parallel()
+
+	ctx := context.Background()
+
+	ctx, cancel := context.WithCancel(ctx)
+
+	mockSource := NewMockSource("MockSource", 10)
+
+	mockSource.SourceStart("Music")
+
+	go mockSource.PublishArticles(ctx)
+
+	select {
+	case <-ctx.Done():
+	case _, ok := <-mockSource.News:
+		if !ok {
+			t.Fatalf("Expected : Open Channel, got : closed Channel")
+		}
+	}
+
+	cancel()
 }
 
 func Test_MockSource_Start_Stop(t *testing.T) {
 	t.Parallel()
 
-	mockSource := NewMockSource("MockSource_4")
+	mockSource := NewMockSource("MockSource", 10)
 
-	mockSource.SourceStart(10, "Sports", "Tech", "Movies")
+	mockSource.SourceStart("Sports", "Tech", "Movies")
 
 	mockSource.SourceStop()
 
@@ -83,15 +143,15 @@ func Test_MockSource_MultipleCategory_WithTimeout(t *testing.T) {
 
 	rootCtx := context.Background()
 
-	ctx, cancel := context.WithTimeout(rootCtx, 30*time.Second)
+	ctx, cancel := context.WithTimeout(rootCtx, 15*time.Second)
 
 	defer cancel()
 
-	mockSource := NewMockSource("MockSource_5")
+	mockSource := NewMockSource("MockSource_5", 10)
 
-	mockSource.SourceStart(10, "Sports", "Tech", "Movies")
+	mockSource.SourceStart("Sports", "Tech", "Movies")
 
-	go mockSource.PublishArticles()
+	go mockSource.PublishArticles(ctx)
 
 	select {
 	case <-rootCtx.Done():

@@ -2,7 +2,7 @@ package cli
 
 import (
 	"flag"
-	//"github.com/gosmartwizard/gopherguides-intro-to-go/week11/pkg"
+	"week11/newsservice"
 )
 
 func HandleClear(args []string) error {
@@ -26,7 +26,7 @@ func HandleClear(args []string) error {
 
 func clear(backupFile string) error {
 
-	ns := NewNewService()
+	ns := newsservice.NewNewService()
 
 	err := ns.Start()
 

@@ -6,7 +6,8 @@ import (
 	"fmt"
 	"os"
 	"strconv"
-	//"github.com/gosmartwizard/gopherguides-intro-to-go/week11/pkg"
+	"week11/newsservice"
+	"week11/source"
 )
 
 func HandleRead(args []string) error {
@@ -65,11 +66,11 @@ func HandleRead(args []string) error {
 	return nil
 }
 
-func getArticles(backupFile string, ids []string) (map[int]Article, error) {
+func getArticles(backupFile string, ids []string) (map[int]source.Article, error) {
 
-	var articles map[int]Article
+	var articles map[int]source.Article
 
-	ns := NewNewService()
+	ns := newsservice.NewNewService()
 
 	err := ns.Start()
 
@@ -82,7 +83,7 @@ func getArticles(backupFile string, ids []string) (map[int]Article, error) {
 	return articles, err
 }
 
-func saveArticlesInOutputFile(outputFileLocation string, articles map[int]Article) error {
+func saveArticlesInOutputFile(outputFileLocation string, articles map[int]source.Article) error {
 
 	if len(articles) == 0 {
 		return nil

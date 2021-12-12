@@ -3,12 +3,12 @@ package main
 import (
 	"fmt"
 	"os"
-	//"github.com/gosmartwizard/gopherguides-intro-to-go/week11/cmd/newservice/cli"
+	"week11/cmd/news_service/cli"
 )
 
 func main() {
 
-	app := &App{}
+	app := &cli.App{}
 
 	err := app.Main(os.Args[1:])
 

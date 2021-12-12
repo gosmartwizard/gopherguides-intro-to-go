@@ -3,12 +3,12 @@ package cli
 import (
 	"fmt"
 	"os"
-	//"github.com/gosmartwizard/gopherguides-intro-to-go/week11/pkg"
+	"week11/newsservice"
 )
 
 func GetNewserviceStats() error {
 
-	ns := NewNewService()
+	ns := newsservice.NewNewService()
 
 	err := ns.Start()
 

@@ -1,4 +1,4 @@
-package week10
+package week11
 
 import (
 	"context"
@@ -6,49 +6,42 @@ import (
 	"time"
 )
 
-func NewMockSource(name string) *MockSource {
+func NewMockSource(name string, mockSourceInterval int) *MockSource {
 	s := &MockSource{}
 	s.name = name
-	s.News = make(chan []Article)
+	s.mockSourceInterval = mockSourceInterval
 	s.closed = false
 
 	return s
 }
 
-func (s *MockSource) SourceStart(interval int, categories ...string) {
+func (s *MockSource) SourceStart(categories ...string) (ch chan []Article) {
 
 	s.Lock()
 	defer s.Unlock()
 
-	ctx := context.Background()
-
-	ctx, cancel := context.WithCancel(ctx)
-
-	s.ctx = ctx
-
-	s.Cancel = cancel
-
 	s.categories = make([]string, 0, len(categories))
 
-	copy(s.categories, categories)
+	s.categories = append(s.categories, categories...)
 
-	s.mockSourceInterval = interval
+	s.News = make(chan []Article)
+
+	return s.News
 }
 
-func (s *MockSource) PublishArticles() {
+func (s *MockSource) PublishArticles(ctx context.Context) {
 
 	for {
 		select {
-		case <-s.ctx.Done():
-			fmt.Printf("Cancellation in source : %#v \n", s.name)
+		case <-ctx.Done():
 			s.SourceStop()
 			return
-		case s.News <- s.getArticle():
+		case s.News <- s.GetArticles():
 		}
 	}
 }
 
-func (ms *MockSource) getArticle() []Article {
+func (ms *MockSource) GetArticles() []Article {
 
 	time.Sleep(time.Second * time.Duration(ms.mockSourceInterval))
 
@@ -58,19 +51,25 @@ func (ms *MockSource) getArticle() []Article {
 	article := Article{}
 
 	for _, category := range ms.categories {
-		if category == "Sports" {
-			article.Source = ms.name
-			article.Category = category
+
+		switch category {
+		case "sports", "Sports":
 			article.Description = "Sachin Tendulkar"
-		} else if category == "Tech" {
-			article.Source = ms.name
-			article.Category = category
+		case "tech", "Tech":
 			article.Description = "GoLang"
-		} else if category == "Movies" {
-			article.Source = ms.name
-			article.Category = category
+		case "movies", "Movies":
 			article.Description = "Avengers"
+		case "politics", "Politics":
+			article.Description = "Narendra Modi"
+		case "music", "Music":
+			article.Description = "Mark Bates Beatles"
+		default:
+			fmt.Println("Invalid category")
+
 		}
+
+		article.Source = ms.name
+		article.Category = category
 
 		articles = append(articles, article)
 	}
@@ -92,8 +91,6 @@ func (s *MockSource) SourceStop() {
 	s.stopOnce.Do(func() {
 		s.Lock()
 		defer s.Unlock()
-
-		s.Cancel()
 
 		s.closed = true
 

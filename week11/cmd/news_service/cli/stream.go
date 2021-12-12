@@ -8,7 +8,8 @@ import (
 	"os"
 	"os/signal"
 	"time"
-	//"github.com/gosmartwizard/gopherguides-intro-to-go/week11/pkg"
+	"week11/newsservice"
+	"week11/source"
 )
 
 func HandleStream(args []string) error {
@@ -48,7 +49,7 @@ func getStreamByCategory(backupFile string, categories []string, outputFile stri
 
 	defer cancel()
 
-	ns := NewNewService()
+	ns := newsservice.NewNewService()
 
 	err := ns.Start()
 
@@ -64,7 +65,7 @@ func getStreamByCategory(backupFile string, categories []string, outputFile stri
 		for {
 			time.Sleep(time.Second * time.Duration(10))
 
-			var articles map[int]Article
+			var articles map[int]source.Article
 
 			articles, _ = ns.GetStreamByCategory(backupFile, categories)
 

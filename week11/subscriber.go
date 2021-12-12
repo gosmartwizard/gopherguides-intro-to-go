@@ -1,4 +1,4 @@
-package week10
+package week11
 
 import (
 	"context"
@@ -43,29 +43,13 @@ func (s *Subscriber) readArticle(ch chan Article) {
 	for {
 		select {
 		case <-s.ctx.Done():
-			fmt.Printf("Cancellation in Subscriber : %v \n", s.Name)
 			return
 		case article, ok := <-ch:
 			if !ok {
-				fmt.Printf("Channel closed in Subscriber : %v \n", s.Name)
-				continue
+				return
 			}
 
-			subscribed := false
-			for _, category := range s.Topics {
-				if article.Category == category {
-					subscribed = true
-					break
-				} else {
-					continue
-				}
-			}
-
-			if subscribed {
-				fmt.Printf("Article : %#v \n", article)
-			} else {
-				fmt.Printf("Subscriber : %#v not subscribed to this category : %#v \n", s.Name, article.Category)
-			}
+			fmt.Printf("Subscriber : %v received Article : %v \n", s.Name, article)
 		}
 	}
 }

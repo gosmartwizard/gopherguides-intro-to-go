@@ -1,50 +1,43 @@
-package week10
+package week11
 
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"os"
 	"time"
 )
 
-func NewFileBasedSource(name string) *FileBasedSource {
+func NewFileBasedSource(name string, filePath string, interval int) *FileBasedSource {
 	s := &FileBasedSource{}
 	s.name = name
-	s.filePath = "./newsarticles/newsarticles.json"
-	s.News = make(chan []Article)
+	s.filePath = filePath
+	s.fileBasedInterval = interval
 	s.closed = false
 
 	return s
 }
 
-func (s *FileBasedSource) SourceStart(interval int, categories ...string) {
+func (s *FileBasedSource) SourceStart(categories ...string) (ch chan []Article) {
 
 	s.Lock()
 	defer s.Unlock()
 
-	ctx := context.Background()
+	s.categories = make([]string, 0, len(categories))
 
-	ctx, cancel := context.WithCancel(ctx)
+	s.categories = append(s.categories, categories...)
 
-	s.ctx = ctx
+	s.News = make(chan []Article)
 
-	s.Cancel = cancel
+	return s.News
 
-	s.categories = make([]string, len(categories))
-
-	copy(s.categories, categories)
-
-	s.fileBasedInterval = interval
 }
 
-func (s *FileBasedSource) PublishArticles() {
+func (s *FileBasedSource) PublishArticles(ctx context.Context) {
 
 	for {
 		select {
-		case <-s.ctx.Done():
-			fmt.Printf("Cancellation in source : %#v \n", s.name)
+		case <-ctx.Done():
 			s.SourceStop()
 			return
 		case s.News <- s.GetArticles():
@@ -87,8 +80,6 @@ func (s *FileBasedSource) SourceStop() {
 	s.stopOnce.Do(func() {
 		s.Lock()
 		defer s.Unlock()
-
-		s.Cancel()
 
 		s.closed = true
 
