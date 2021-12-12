@@ -565,11 +565,7 @@ func (ns *NewsService) Clear(backupFile string) error {
 		return errors.New("BackupFile not exists")
 	}
 
-	err = os.Remove(backupFile)
-
-	if err != nil {
-		return err
-	}
+	os.Remove(backupFile)
 
 	return nil
 }
