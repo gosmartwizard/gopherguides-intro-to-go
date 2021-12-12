@@ -192,7 +192,7 @@ func Test_Cli_Stream_F_Flag(t *testing.T) {
 	generateBackupData(filePath)
 
 	go func() {
-		time.Sleep(15 * time.Second)
+		time.Sleep(10 * time.Second)
 		syscall.Kill(syscall.Getpid(), syscall.SIGINT)
 	}()
 
@@ -220,7 +220,7 @@ func Test_Cli_Stream_J_Flag(t *testing.T) {
 	generateBackupData(filePath)
 
 	go func() {
-		time.Sleep(15 * time.Second)
+		time.Sleep(10 * time.Second)
 		syscall.Kill(syscall.Getpid(), syscall.SIGINT)
 	}()
 
@@ -241,6 +241,7 @@ func Test_Cli_Stream_J_Flag(t *testing.T) {
 	}
 }
 
+
 func Test_Cli_Stream_O_Flag(t *testing.T) {
 	t.Parallel()
 
@@ -249,7 +250,7 @@ func Test_Cli_Stream_O_Flag(t *testing.T) {
 	generateBackupData(filePath)
 
 	go func() {
-		time.Sleep(15 * time.Second)
+		time.Sleep(10 * time.Second)
 		syscall.Kill(syscall.Getpid(), syscall.SIGINT)
 	}()
 
