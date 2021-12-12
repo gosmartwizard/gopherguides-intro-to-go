@@ -47,7 +47,7 @@ func generateBackupData(filePath string) error {
 func Test_Cli_Read(t *testing.T) {
 	t.Parallel()
 
-	filePath := "/tmp/newsarticles1.json"
+	filePath := "./testdata/cli/newsarticles1.json"
 
 	generateBackupData(filePath)
 
@@ -70,7 +70,7 @@ func Test_Cli_Read(t *testing.T) {
 func Test_Cli_Read_F_Flag(t *testing.T) {
 	t.Parallel()
 
-	filePath := "/tmp/newsarticles2.json"
+	filePath := "./testdata/cli/newsarticles2.json"
 
 	generateBackupData(filePath)
 
@@ -93,7 +93,7 @@ func Test_Cli_Read_F_Flag(t *testing.T) {
 func Test_Cli_Read_J_Flag(t *testing.T) {
 	t.Parallel()
 
-	filePath := "/tmp/newsarticles3.json"
+	filePath := "./testdata/cli/newsarticles3.json"
 
 	generateBackupData(filePath)
 
@@ -117,7 +117,7 @@ func Test_Cli_Read_J_Flag(t *testing.T) {
 func Test_Cli_Read_O_Flag(t *testing.T) {
 	t.Parallel()
 
-	filePath := "/tmp/newsarticles4.json"
+	filePath := "./testdata/cli/newsarticles4.json"
 
 	generateBackupData(filePath)
 
@@ -126,7 +126,7 @@ func Test_Cli_Read_O_Flag(t *testing.T) {
 	args = append(args, "-f")
 	args = append(args, filePath)
 	args = append(args, "-o")
-	args = append(args, "/tmp/readcmd_output_stream.json")
+	args = append(args, "./testdata/cli/readcmd_output_stream.json")
 	args = append(args, "1")
 	args = append(args, "2")
 	args = append(args, "3")
@@ -300,7 +300,7 @@ func Test_Cli_Stream_Empty(t *testing.T) {
 func Test_Cli_Clear(t *testing.T) {
 	t.Parallel()
 
-	filePath := "/tmp/newsarticles9.json"
+	filePath := "./testdata/cli/newsarticles9.json"
 
 	generateBackupData(filePath)
 
@@ -320,7 +320,7 @@ func Test_Cli_Clear(t *testing.T) {
 func Test_Cli_Root(t *testing.T) {
 	t.Parallel()
 
-	filePath := "/tmp/NewsServiceBackup.json"
+	filePath := "./testdata/cli/NewsServiceBackup.json"
 
 	generateBackupData(filePath)
 
