@@ -60,7 +60,7 @@ func Test_NewsService_MockBased_Registration_UnRegister(t *testing.T) {
 
 	ns.MockRegistration("MockBasedSource_1", "Tech")
 
-	time.Sleep(time.Second * time.Duration(50))
+	time.Sleep(time.Second * time.Duration(20))
 
 	ns.UnRegister("MockBasedSource_1")
 

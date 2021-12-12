@@ -183,6 +183,7 @@ func Test_Cli_Stream(t *testing.T) {
 	}
 }
 
+/*
 func Test_Cli_Stream_F_Flag(t *testing.T) {
 	t.Parallel()
 
@@ -269,7 +270,7 @@ func Test_Cli_Stream_O_Flag(t *testing.T) {
 		t.Fatalf("expected : nil, got : %#v", err)
 	}
 }
-
+*/
 func Test_Cli_Stream_Empty(t *testing.T) {
 	t.Parallel()
 
