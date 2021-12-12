@@ -320,7 +320,7 @@ func Test_Cli_Clear(t *testing.T) {
 func Test_Cli_Root(t *testing.T) {
 	t.Parallel()
 
-	filePath := "./testdata/cli/NewsServiceBackup.json"
+	filePath := "./NewsServiceBackup.json"
 
 	generateBackupData(filePath)
 

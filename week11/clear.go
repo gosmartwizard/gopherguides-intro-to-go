@@ -10,7 +10,7 @@ func HandleClear(args []string) error {
 
 	clearCmd := flag.NewFlagSet("clear", flag.ExitOnError)
 
-	clearCmd.StringVar(&BackupFile, "f", "/tmp/NewsServiceBackup.json", "location of the backupfile")
+	clearCmd.StringVar(&BackupFile, "f", "./NewsServiceBackup.json", "location of the backupfile")
 
 	clearCmd.Parse(args)
 

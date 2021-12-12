@@ -19,7 +19,7 @@ func HandleStream(args []string) error {
 	readCmd := flag.NewFlagSet("stream", flag.ExitOnError)
 
 	readCmd.BoolVar(&JSON, "j", false, "output in json format")
-	readCmd.StringVar(&BackupFile, "f", "/tmp/NewsServiceBackup.json", "location of the backupfile")
+	readCmd.StringVar(&BackupFile, "f", "./NewsServiceBackup.json", "location of the backupfile")
 	readCmd.StringVar(&OutputFile, "o", "", "output results to a file")
 
 	readCmd.Parse(args)

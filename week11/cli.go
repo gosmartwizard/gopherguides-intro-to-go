@@ -39,11 +39,11 @@ func (app *App) Usage(w io.Writer) error {
 
 	fmt.Fprintln(w, "---------------")
 
-	fmt.Fprintln(w, "news_service stream -f /tmp/NewsServiceBackup.json -j -o /tmp/stream.json sports")
+	fmt.Fprintln(w, "news_service stream -f ./NewsServiceBackup.json -j -o /tmp/stream.json sports")
 
-	fmt.Fprintln(w, "news_service read -o /tmp/articles.json -j -f /tmp/NewsServiceBackup.json 1 2 3")
+	fmt.Fprintln(w, "news_service read -o /tmp/articles.json -j -f ./NewsServiceBackup.json 1 2 3")
 
-	fmt.Fprintln(w, "news_service clear -f /tmp/NewsServiceBackup.json")
+	fmt.Fprintln(w, "news_service clear -f ./NewsServiceBackup.json")
 
 	return nil
 }

@@ -15,7 +15,7 @@ func GetNewserviceStats() error {
 		return err
 	}
 
-	stats, err := ns.GetNewsServiceStats("/tmp/NewsServiceBackup.json")
+	stats, err := ns.GetNewsServiceStats("./NewsServiceBackup.json")
 
 	if err != nil {
 		return err
