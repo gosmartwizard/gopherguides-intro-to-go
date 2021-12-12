@@ -2,9 +2,13 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"os"
+	"runtime"
+	"syscall"
 	"testing"
+	"time"
 )
 
 func generateBackupData(filePath string) error {
@@ -153,14 +157,14 @@ func Test_Cli_Read_Empty(t *testing.T) {
 	}
 }
 
-/* func Test_Cli_Stream(t *testing.T) {
-	t.Parallel()
+func Test_Cli_Stream(t *testing.T) {
+	//t.Parallel()
 
 	if runtime.GOOS == "windows" {
 		t.Skip()
 	}
 
-	filePath := "/tmp/newsarticles5.json"
+	filePath := "./testdata/cli/newsarticles5.json"
 
 	generateBackupData(filePath)
 
@@ -192,7 +196,7 @@ func Test_Cli_Stream_F_Flag(t *testing.T) {
 		t.Skip()
 	}
 
-	filePath := "/tmp/newsarticles6.json"
+	filePath := "./testdata/cli/newsarticles6.json"
 
 	generateBackupData(filePath)
 
@@ -218,13 +222,13 @@ func Test_Cli_Stream_F_Flag(t *testing.T) {
 }
 
 func Test_Cli_Stream_J_Flag(t *testing.T) {
-	t.Parallel()
+	//t.Parallel()
 
 	if runtime.GOOS == "windows" {
 		t.Skip()
 	}
 
-	filePath := "/tmp/newsarticles7.json"
+	filePath := "./testdata/cli/newsarticles7.json"
 
 	generateBackupData(filePath)
 
@@ -251,13 +255,15 @@ func Test_Cli_Stream_J_Flag(t *testing.T) {
 }
 
 func Test_Cli_Stream_O_Flag(t *testing.T) {
-	t.Parallel()
+	//t.Parallel()
+
+	fmt.Printf("TESTING GOOS : %v", runtime.GOOS)
 
 	if runtime.GOOS == "windows" {
 		t.Skip()
 	}
 
-	filePath := "/tmp/newsarticles8.json"
+	filePath := "./testdata/cli/newsarticles8.json"
 
 	generateBackupData(filePath)
 
@@ -271,7 +277,7 @@ func Test_Cli_Stream_O_Flag(t *testing.T) {
 	args = append(args, "-f")
 	args = append(args, filePath)
 	args = append(args, "-o")
-	args = append(args, "/tmp/streamcmd_output_stream.json")
+	args = append(args, "./testdata/cli/streamcmd_output_stream.json")
 	args = append(args, "Movies")
 	args = append(args, "Tech")
 	args = append(args, "Sports")
@@ -283,7 +289,7 @@ func Test_Cli_Stream_O_Flag(t *testing.T) {
 		t.Fatalf("expected : nil, got : %#v", err)
 	}
 }
-*/
+
 func Test_Cli_Stream_Empty(t *testing.T) {
 	t.Parallel()
 
