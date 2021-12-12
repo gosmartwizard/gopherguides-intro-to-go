@@ -1,132 +1,106 @@
 package cli
 
 import (
+	"encoding/json"
 	"flag"
+	"fmt"
+	"os"
+	"strconv"
+	//"github.com/gosmartwizard/gopherguides-intro-to-go/week11/pkg"
 )
 
-//var _ IOCommander = &ListCmd{}
+func HandleRead(args []string) error {
 
-type ReadCmd struct {
-	//IO
-	Name string
-	//Book *notes.Book // book to list
+	var BackupFile string
+	var JSON bool
+	var OutputFile string
 
-	// flags:
-	BackupFile string // location of the book database file
-	JSON       bool   // output in JSON format
-	Output     string // output file
-	//Verbose bool   // verbose output
+	readCmd := flag.NewFlagSet("read", flag.ExitOnError)
 
-	flags *flag.FlagSet
-}
+	readCmd.BoolVar(&JSON, "j", false, "output in json format")
+	readCmd.StringVar(&BackupFile, "f", "/tmp/NewsServiceBackup.json", "location of the backupfile")
+	readCmd.StringVar(&OutputFile, "o", "", "output results to a file")
 
-// snippet: type
+	readCmd.Parse(args)
 
-// snippet: flags
-func (cmd *ReadCmd) Flags() *flag.FlagSet {
+	args = readCmd.Args()
 
-	if len(cmd.BackupFile) == 0 {
-		cmd.BackupFile = "/tmp/news.json"
+	if len(args) == 0 {
+		return fmt.Errorf("ID numbers are not provided")
 	}
 
-	if cmd.flags != nil {
-		return cmd.flags
-	}
+	for _, id := range args {
 
-	// create a new flag set
-	cmd.flags = flag.NewFlagSet(cmd.Name, flag.ContinueOnError)
+		id, err := strconv.Atoi(id)
 
-	// add the flags to the flag set
-	cmd.flags.BoolVar(&cmd.JSON, "j", cmd.JSON, "output in json format")
-	cmd.flags.StringVar(&cmd.BackupFile, "f", cmd.BackupFile, "location of the backupfile")
-	cmd.flags.StringVar(&cmd.Output, "o", cmd.Output, "output results to a file")
-
-	return cmd.flags
-}
-
-// snippet: flags
-
-// snippet: main
-/*
-func (cmd *ListCmd) Main(ctx context.Context, pwd string, args []string) error {
-	if err := cmd.init(pwd, args); err != nil {
-		return err
-	}
-
-	return cmd.print(cmd.Book)
-} */
-
-// snippet: main
-
-// snippet: setio
-/* func (cmd *ListCmd) SetIO(oi IO) {
-	cmd.IO = oi
-} */
-
-// snippet: setio
-
-// snippet: init
-/* func (cmd *ReadCmd) init(pwd string, args []string) error {
-	// set a default location for the database file
-	// if the user hasn't specified one
-	if cmd.BackupFile == "" {
-		cmd.BackupFile = "/tmp/news.json"
-	}
-
-	// parse the flags with the given arguments
-	if err := cmd.Flags().Parse(args); err != nil {
-		return err
-	}
-
-	if cmd.Book == nil {
-		cmd.Book = &notes.Book{}
-		// open the database file
-		err := OpenBook(filepath.Join(pwd, cmd.DB), cmd.Book)
 		if err != nil {
 			return err
 		}
 
+		if id <= 0 {
+			return fmt.Errorf("id : %#v is not valid", id)
+		}
 	}
 
-	return nil
-}
-*/
-// snippet: init
+	articles, err := getArticles(BackupFile, args)
 
-// snippet: print
-/* func (cmd *ReadCmd) print(book *notes.Book) error {
-	notes, err := book.Select()
 	if err != nil {
 		return err
 	}
 
-	// if the user has specified an output file
-	// write the results to the file
-	if len(cmd.Output) > 0 {
-		os.MkdirAll(filepath.Dir(cmd.Output), 0755)
-		f, err := os.Create(cmd.Output)
-		if err != nil {
-			return err
-		}
-		defer f.Close()
-
-		// set the Stdout to the file
-		cmd.Out = f
+	if len(OutputFile) > 0 {
+		saveArticlesInOutputFile(OutputFile, articles)
+		return nil
 	}
 
-	// if the user has specified JSON output
-	// marshal the results to JSON
-	// and print to Stdout (or file)
-	if cmd.JSON {
-		return json.NewEncoder(cmd.Stdout()).Encode(notes)
+	if JSON {
+		json.NewEncoder(os.Stdout).Encode(articles)
+		return nil
 	}
 
-	// otherwise, print the results to Stdout
-	for _, note := range notes {
-		fmt.Fprintf(cmd.Stdout(), "%d\t%s\n", note.ID(), note.Short(50))
+	for id, article := range articles {
+		fmt.Printf("Article : %v is from source : %v under category : %v with description : %v \n", id, article.Source, article.Category, article.Description)
 	}
 
 	return nil
 }
-*/
-// snippet: print
+
+func getArticles(backupFile string, ids []string) (map[int]Article, error) {
+
+	var articles map[int]Article
+
+	ns := NewNewService()
+
+	err := ns.Start()
+
+	if err != nil {
+		return articles, err
+	}
+
+	articles, err = ns.GetArticlesByIds(backupFile, ids)
+
+	return articles, err
+}
+
+func saveArticlesInOutputFile(outputFileLocation string, articles map[int]Article) error {
+
+	if len(articles) == 0 {
+		return nil
+	}
+
+	bytes, err := json.Marshal(articles)
+
+	if err != nil {
+		return err
+	}
+
+	file, err := os.Create(outputFileLocation)
+
+	if err != nil {
+		return err
+	}
+
+	_, err = file.Write(bytes)
+
+	return err
+}
