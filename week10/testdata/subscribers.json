@@ -1,0 +1,15 @@
+
+[
+	{
+		"name" : "Subscriber1", 
+		"topics" : ["Sports", "Tech"]
+	 },
+	 {
+		"name" : "Subscriber2", 
+		"topics" : ["Tech", "Movies"]
+	 },
+	 {
+		"name" : "Subscriber3", 
+		"topics" : ["Sports", "Movies"]
+	 }
+]
