@@ -6,7 +6,6 @@ import (
 	"io/ioutil"
 	"os"
 	"runtime"
-	"syscall"
 	"testing"
 	"time"
 )
@@ -170,7 +169,13 @@ func Test_Cli_Stream(t *testing.T) {
 
 	go func() {
 		time.Sleep(15 * time.Second)
-		syscall.Kill(syscall.Getpid(), syscall.SIGINT)
+		//syscall.Kill(syscall.Getpid(), syscall.SIGINT)
+		p, err := os.FindProcess(os.Getpid())
+
+		if err != nil {
+			return
+		}
+		p.Signal(os.Interrupt)
 	}()
 
 	var args []string
@@ -202,7 +207,13 @@ func Test_Cli_Stream_F_Flag(t *testing.T) {
 
 	go func() {
 		time.Sleep(10 * time.Second)
-		syscall.Kill(syscall.Getpid(), syscall.SIGINT)
+		//syscall.Kill(syscall.Getpid(), syscall.SIGINT)
+		p, err := os.FindProcess(os.Getpid())
+
+		if err != nil {
+			return
+		}
+		p.Signal(os.Interrupt)
 	}()
 
 	var args []string
@@ -234,7 +245,14 @@ func Test_Cli_Stream_J_Flag(t *testing.T) {
 
 	go func() {
 		time.Sleep(10 * time.Second)
-		syscall.Kill(syscall.Getpid(), syscall.SIGINT)
+		//syscall.Kill(syscall.Getpid(), syscall.SIGINT)
+
+		p, err := os.FindProcess(os.Getpid())
+
+		if err != nil {
+			return
+		}
+		p.Signal(os.Interrupt)
 	}()
 
 	var args []string
@@ -269,7 +287,13 @@ func Test_Cli_Stream_O_Flag(t *testing.T) {
 
 	go func() {
 		time.Sleep(10 * time.Second)
-		syscall.Kill(syscall.Getpid(), syscall.SIGINT)
+		//syscall.Kill(syscall.Getpid(), syscall.SIGINT)
+		p, err := os.FindProcess(os.Getpid())
+
+		if err != nil {
+			return
+		}
+		p.Signal(os.Interrupt)
 	}()
 
 	var args []string
