@@ -1,49 +1,9 @@
-package week11
+package main
 
 import (
-	"encoding/json"
-	"io/ioutil"
-	"os"
 	"testing"
 	"time"
 )
-
-func generateBackupData(filePath string) error {
-
-	articles := make(map[int]Article)
-
-	article := Article{}
-
-	article.Source = "FileBasedSource"
-	article.Category = "Sports"
-	article.Description = "Brian Lara"
-
-	articles[1] = article
-
-	article.Source = "FileBasedSource"
-	article.Category = "Movies"
-	article.Description = "Dear Comrade"
-
-	articles[2] = article
-
-	article.Source = "FileBasedSource"
-	article.Category = "Tech"
-	article.Description = "Kubernetes"
-
-	articles[3] = article
-
-	fileBytes, err := json.Marshal(articles)
-
-	if err != nil {
-		return err
-	}
-
-	os.Remove(filePath)
-
-	ioutil.WriteFile(filePath, fileBytes, 0644)
-
-	return nil
-}
 
 func Test_NewsService_MockBased_Start_Stop(t *testing.T) {
 	t.Parallel()
