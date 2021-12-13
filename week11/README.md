@@ -1,5 +1,8 @@
 
-                        ** NewsService in Progress **
+### **Name** : Naveen Reddy Kunareddy
+### **Project** : News Service
+### **Overview**  : At the core of the project is a news service. This service can have many subscribers listening to multiple news stories. The service will also have many sources for content.
+
 
 
 # **NewsService Design**
@@ -15,6 +18,12 @@ git clone git@github.com:gosmartwizard/gopherguides-intro-to-go.git
 git checkout week11
 cd week11
 go build -o news_service
+```
+
+## Run the tests
+```
+cd week11
+go test -v -race -cover ./... -coverprofile=c.out -count=1
 ```
 
 # Usage
@@ -115,4 +124,5 @@ cp sampledata/newsarticles.json newsarticles/newsarticles.json
 ./news_service clear -f /tmp/news_service.json
 ```
 ---
+
 
