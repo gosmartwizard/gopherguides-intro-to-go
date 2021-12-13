@@ -75,7 +75,7 @@ func NewNewService() *NewsService {
 
 	ns.newsStats = &NewsStats{}
 	ns.newsStats.totalArticles = 0
-	ns.newsStats.backupFileLocation = "/tmp/NewsServiceBackup.json"
+	ns.newsStats.backupFileLocation = "./NewsServiceBackup.json"
 	ns.newsStats.articlesPerCategory = make(map[string]int)
 	ns.newsStats.articlesPerSource = make(map[string]int)
 
@@ -159,6 +159,30 @@ func (ns *NewsService) saveArticleInMemory(article Article) {
 		ns.newsStats.categories = append(ns.newsStats.categories, article.Category)
 	} else {
 		c[count] = article
+	}
+
+	ns.newsStats.articlesPerCategory[article.Category] += 1
+	ns.newsStats.articlesPerSource[article.Source] += 1
+}
+
+func (ns *NewsService) saveIdArticleInMemory(id int, article Article) {
+
+	ns.Lock()
+	defer ns.Unlock()
+
+	ns.newsStats.totalArticles += 1
+
+	ns.newsArticles.newsArticles[id] = article
+
+	c, ok := ns.categoryArticles.categoryArticles[article.Category]
+
+	if !ok {
+		c = make(map[int]Article)
+		c[id] = article
+		ns.categoryArticles.categoryArticles[article.Category] = c
+		ns.newsStats.categories = append(ns.newsStats.categories, article.Category)
+	} else {
+		c[id] = article
 	}
 
 	ns.newsStats.articlesPerCategory[article.Category] += 1
@@ -307,8 +331,8 @@ func (ns *NewsService) LoadArticlesFromBackupFile() error {
 		return err
 	}
 
-	for _, article := range articles {
-		ns.saveArticleInMemory(article)
+	for id, article := range articles {
+		ns.saveIdArticleInMemory(id, article)
 	}
 
 	return nil
