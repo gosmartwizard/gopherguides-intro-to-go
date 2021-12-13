@@ -1,0 +1,27 @@
+[
+	{
+		"source" : "FileBasedSource", 
+		"category" : "sports",
+		"description":"Brian Lara"
+	 },
+	 {
+		"source" : "FileBasedSource", 
+		"category" : "movies",
+		"description":"Dear Comrade"
+	 },
+	 {
+		"source" : "FileBasedSource", 
+		"category" : "tech",
+		"description":"Kubernetes"
+	 },
+    {
+		"source" : "FileBasedSource", 
+		"category" : "music",
+		"description":"Mark Bates Beatles"
+	 },	
+	 {
+		"source" : "FileBasedSource", 
+		"category" : "politics",
+		"description":"Y S Rajashekara  Reddy"
+	}	 
+]
