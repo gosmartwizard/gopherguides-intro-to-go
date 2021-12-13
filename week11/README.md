@@ -121,7 +121,7 @@ cp sampledata/newsarticles.json newsarticles/newsarticles.json
 ./news_service clear
 ```
 ```
-./news_service clear -f /tmp/news_service.json
+./news_service clear -f ./NewsServiceBackup.json
 ```
 ---
 
